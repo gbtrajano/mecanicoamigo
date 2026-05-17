@@ -1,0 +1,94 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// Usuários do sistema (clientes que compram o sistema)
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String   // hashed
+  name      String
+  role      String   @default("USER") // USER ou ADMIN
+  isActive  Boolean  @default(false) // precisa ser ativado pelo admin
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Client {
+  id        String    @id @default(uuid())
+  name      String
+  phone     String?
+  whatsapp  String?
+  email     String?
+  cpfCnpj   String?
+  address   String?
+  notes     String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  vehicles  Vehicle[]
+}
+
+model Vehicle {
+  id           String         @id @default(uuid())
+  clientId     String
+  client       Client         @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  plate        String
+  brand        String
+  model        String
+  year         Int
+  color        String?
+  fuelType     String?
+  vin          String?
+  mileage      Int?
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  serviceOrders ServiceOrder[]
+}
+
+model ServiceOrder {
+  id                Int            @id @default(autoincrement())
+  osNumber          Int            @unique
+  name              String?
+  vehicleId         String
+  vehicle           Vehicle        @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  entryDate         DateTime       @default(now())
+  estimatedDelivery DateTime?
+  description       String?
+  diagnostics       String?
+  status            String         @default("DRAFT")
+  discount          Float          @default(0)
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+  items             ServiceItem[]
+}
+
+model ServiceItem {
+  id             Int          @id @default(autoincrement())
+  serviceOrderId Int
+  serviceOrder   ServiceOrder @relation(fields: [serviceOrderId], references: [id], onDelete: Cascade)
+  type           String
+  name           String
+  quantity       Int          @default(1)
+  unitPrice      Float
+  createdAt      DateTime     @default(now())
+}
+
+model InventoryItem {
+  id          String   @id @default(uuid())
+  name        String
+  category    String
+  brand       String?
+  partNumber  String?
+  quantity    Int      @default(0)
+  minQuantity Int      @default(0) // Quantidade mínima para alerta
+  unitPrice   Float    @default(0)
+  location    String?  // Localização no estoque
+  notes       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
