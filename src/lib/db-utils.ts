@@ -1,5 +1,3 @@
-import { ServiceItem } from '../generated/prisma/client';
-
 // Format bytes to human readable
 export function formatBytes(bytes: number): string {
   if (bytes === 0) return '0 B';
