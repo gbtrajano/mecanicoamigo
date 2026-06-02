@@ -111,19 +111,19 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Ações Rápidas */}
+        {/* Ações Rápidas - links corrigidos para páginas existentes */}
         <div className="bg-surface rounded-xl p-5 card-shadow border border-border">
           <h3 className="font-semibold text-text mb-4">Ações Rápidas</h3>
           <div className="space-y-2">
-            <a href="/ordens/nova" className="flex items-center gap-3 p-3 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition-colors text-sm font-medium">
+            <a href="/ordens" className="flex items-center gap-3 p-3 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition-colors text-sm font-medium">
               <Wrench className="w-4 h-4" />
               Nova Ordem de Serviço
             </a>
-            <a href="/clientes/novo" className="flex items-center gap-3 p-3 rounded-lg bg-bg text-text hover:bg-primary/5 transition-colors text-sm font-medium">
+            <a href="/clientes" className="flex items-center gap-3 p-3 rounded-lg bg-bg text-text hover:bg-primary/5 transition-colors text-sm font-medium">
               <Users className="w-4 h-4" />
               Cadastrar Cliente
             </a>
-            <a href="/estoque/novo" className="flex items-center gap-3 p-3 rounded-lg bg-bg text-text hover:bg-primary/5 transition-colors text-sm font-medium">
+            <a href="/estoque" className="flex items-center gap-3 p-3 rounded-lg bg-bg text-text hover:bg-primary/5 transition-colors text-sm font-medium">
               <AlertTriangle className="w-4 h-4" />
               Adicionar Peça
             </a>

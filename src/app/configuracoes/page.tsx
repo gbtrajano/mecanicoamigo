@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { configDB, exportarDados, importarDados } from '@/lib/local-db'
+import { exportarDados, importarDados } from '@/lib/local-db'
 import { Download, Upload, Database, Settings, AlertTriangle, CheckCircle } from 'lucide-react'
 
 export default function ConfiguracoesPage() {

@@ -9,8 +9,10 @@ export default function LoginPage() {
   const [isLogin, setIsLogin] = useState(true)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
   const [nome, setNome] = useState('')
   const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const { signIn, signUp, user } = useAuth()
@@ -26,13 +28,34 @@ export default function LoginPage() {
     setError('')
     setLoading(true)
 
+    if (!isLogin) {
+      if (password !== confirmPassword) {
+        setError('As senhas não coincidem!')
+        setLoading(false)
+        return
+      }
+      if (password.length < 6) {
+        setError('A senha deve ter pelo menos 6 caracteres!')
+        setLoading(false)
+        return
+      }
+    }
+
     if (isLogin) {
       const { error } = await signIn(email, password)
       if (error) setError(error.message)
     } else {
       const { error } = await signUp(email, password, { nome })
-      if (error) setError(error.message)
-      else setError('Verifique seu email para confirmar o cadastro!')
+      if (error) {
+        setError(error.message)
+      } else {
+        setError('')
+        // Login automático após cadastro (sem confirmação de email)
+        const { error: loginError } = await signIn(email, password)
+        if (!loginError) {
+          router.push('/dashboard')
+        }
+      }
     }
 
     setLoading(false)
@@ -60,7 +83,7 @@ export default function LoginPage() {
           </p>
 
           {error && (
-            <div className={`p-3 rounded-lg text-sm mb-4 ${error.includes('Verifique') ? 'bg-success/10 text-success' : 'bg-danger/10 text-danger'}`}>
+            <div className="p-3 rounded-lg text-sm mb-4 bg-danger/10 text-danger">
               {error}
             </div>
           )}
@@ -73,7 +96,7 @@ export default function LoginPage() {
                   type="text"
                   value={nome}
                   onChange={(e) => setNome(e.target.value)}
-                  required
+                  required={!isLogin}
                   className="w-full px-4 py-2.5 rounded-lg border border-border bg-bg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
                   placeholder="Ex: Oficina do João"
                 />
@@ -114,6 +137,30 @@ export default function LoginPage() {
               </div>
             </div>
 
+            {!isLogin && (
+              <div>
+                <label className="block text-sm font-medium text-text mb-1">Confirmar Senha</label>
+                <div className="relative">
+                  <input
+                    type={showConfirmPassword ? 'text' : 'password'}
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    required={!isLogin}
+                    minLength={6}
+                    className="w-full px-4 py-2.5 rounded-lg border border-border bg-bg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all pr-10"
+                    placeholder="••••••••"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted hover:text-text"
+                  >
+                    {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+              </div>
+            )}
+
             <button
               type="submit"
               disabled={loading}
@@ -126,7 +173,7 @@ export default function LoginPage() {
 
           <div className="mt-6 text-center">
             <button
-              onClick={() => { setIsLogin(!isLogin); setError('') }}
+              onClick={() => { setIsLogin(!isLogin); setError(''); setConfirmPassword('') }}
               className="text-sm text-primary hover:text-primary-dark font-medium"
             >
               {isLogin ? 'Não tem conta? Cadastre-se' : 'Já tem conta? Entre'}

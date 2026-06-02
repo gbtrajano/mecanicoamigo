@@ -1,15 +1,14 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { useAuth } from '@/hooks/useAuth'
 import { useRouter } from 'next/navigation'
-import { Shield, Users, Clock, Circle, XCircle, CheckCircle, AlertTriangle } from 'lucide-react'
-import type { UsuarioOnline } from '@/types'
+import { Shield, Users, Circle, XCircle } from 'lucide-react'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 
 export default function AdminPage() {
-  const { user, isAdmin, usuariosOnline, refreshUsers, loading } = useAuth()
+  const { isAdmin, usuariosOnline, refreshUsers, loading } = useAuth()
   const router = useRouter()
 
   useEffect(() => {
@@ -21,10 +20,10 @@ export default function AdminPage() {
   useEffect(() => {
     if (isAdmin) {
       refreshUsers()
-      const interval = setInterval(refreshUsers, 30000)
+      const interval = setInterval(() => refreshUsers(), 30000)
       return () => clearInterval(interval)
     }
-  }, [isAdmin])
+  }, [isAdmin, refreshUsers])
 
   if (loading || !isAdmin) return null
 

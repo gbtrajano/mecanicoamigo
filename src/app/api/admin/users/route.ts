@@ -1,6 +1,16 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 
+interface UserPresence {
+  user_id: string
+  email: string
+  online: boolean
+  last_seen: string
+  subscription_status: string
+  subscription_start: string | null
+  subscription_end: string | null
+}
+
 export async function GET() {
   const supabaseAdmin = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -23,7 +33,7 @@ export async function GET() {
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
 
-    const users = (data || []).map((u: any) => ({
+    const users = (data || []).map((u: UserPresence) => ({
       id: u.user_id,
       email: u.email,
       online: u.online,
@@ -34,7 +44,8 @@ export async function GET() {
     }))
 
     return NextResponse.json({ users })
-  } catch (err: any) {
-    return NextResponse.json({ error: err.message }, { status: 500 })
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : 'Erro desconhecido'
+    return NextResponse.json({ error: message }, { status: 500 })
   }
 }

@@ -7,13 +7,14 @@ import { useAuth } from '@/hooks/useAuth'
 import {
   LayoutDashboard, Wrench, Package, Users, FileText, 
   DollarSign, Settings, LogOut, ChevronLeft, ChevronRight,
-  BarChart3, Receipt, Shield
+  BarChart3, Receipt, Shield, Car
 } from 'lucide-react'
 
 const menuItems = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/ordens', label: 'Ordens de Serviço', icon: Wrench },
   { href: '/clientes', label: 'Clientes', icon: Users },
+  { href: '/veiculos', label: 'Veículos', icon: Car },
   { href: '/estoque', label: 'Estoque', icon: Package },
   { href: '/financeiro', label: 'Financeiro', icon: DollarSign },
   { href: '/notas-fiscais', label: 'Notas Fiscais', icon: Receipt },
