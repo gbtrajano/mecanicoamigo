@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { ordemDB, transacaoDB, clienteDB } from '@/lib/local-db'
 import type { OrdemServico, Transacao, Cliente } from '@/types'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts'
-import { TrendingUp, ArrowUpRight, ArrowDownRight, DollarSign } from 'lucide-react'
+import { TrendingUp, DollarSign } from 'lucide-react'
 import { format, startOfMonth, endOfMonth, eachMonthOfInterval, subMonths } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 
@@ -64,13 +64,12 @@ export default function RelatoriosPage() {
         </div>
       </div>
 
-      {/* Cards resumo */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="bg-surface rounded-xl p-5 border border-border">
           <div className="flex items-center justify-between mb-2">
             <p className="text-sm text-text-muted">Total Receitas</p>
             <div className="w-8 h-8 bg-success/10 rounded-lg flex items-center justify-center">
-              <ArrowUpRight className="w-4 h-4 text-success" />
+              <TrendingUp className="w-4 h-4 text-success" />
             </div>
           </div>
           <p className="text-2xl font-bold text-success">{formatCurrency(totalReceitas)}</p>
@@ -79,7 +78,7 @@ export default function RelatoriosPage() {
           <div className="flex items-center justify-between mb-2">
             <p className="text-sm text-text-muted">Total Despesas</p>
             <div className="w-8 h-8 bg-danger/10 rounded-lg flex items-center justify-center">
-              <ArrowDownRight className="w-4 h-4 text-danger" />
+              <TrendingUp className="w-4 h-4 text-danger rotate-180" />
             </div>
           </div>
           <p className="text-2xl font-bold text-danger">{formatCurrency(totalDespesas)}</p>
@@ -97,7 +96,6 @@ export default function RelatoriosPage() {
         </div>
       </div>
 
-      {/* Gráficos */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-surface rounded-xl p-5 border border-border">
           <div className="flex items-center gap-2 mb-4">
@@ -139,7 +137,6 @@ export default function RelatoriosPage() {
         </div>
       </div>
 
-      {/* Resumo */}
       <div className="bg-surface rounded-xl p-5 border border-border">
         <h3 className="font-semibold text-text mb-4">Resumo do Período</h3>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">

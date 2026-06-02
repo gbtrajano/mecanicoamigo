@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { transacaoDB } from '@/lib/local-db'
 import Modal from '@/components/Modal'
 import type { Transacao } from '@/types'
-import { Plus, Search, TrendingUp, TrendingDown, DollarSign, Trash2, Edit, ArrowUpRight, ArrowDownRight } from 'lucide-react'
+import { Plus, Search, TrendingUp, TrendingDown, DollarSign, Trash2, Edit } from 'lucide-react'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 
@@ -14,10 +14,22 @@ export default function FinanceiroPage() {
   const [filterTipo, setFilterTipo] = useState<string>('todos')
   const [modalOpen, setModalOpen] = useState(false)
   const [editingTransacao, setEditingTransacao] = useState<Transacao | null>(null)
-  const [formData, setFormData] = useState({
-    tipo: 'receita' as 'receita' | 'despesa',
-    categoria: '', descricao: '', valor: 0, data: format(new Date(), 'yyyy-MM-dd'),
-    formaPagamento: '', status: 'pago' as 'pendente' | 'pago' | 'atrasado'
+  const [formData, setFormData] = useState<{
+    tipo: 'receita' | 'despesa'
+    categoria: string
+    descricao: string
+    valor: number
+    data: string
+    formaPagamento: string
+    status: 'pendente' | 'pago' | 'atrasado'
+  }>({
+    tipo: 'receita',
+    categoria: '',
+    descricao: '',
+    valor: 0,
+    data: format(new Date(), 'yyyy-MM-dd'),
+    formaPagamento: '',
+    status: 'pago'
   })
 
   useEffect(() => { loadData() }, [])
@@ -73,13 +85,12 @@ export default function FinanceiroPage() {
         </button>
       </div>
 
-      {/* Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="bg-surface rounded-xl p-5 border border-border">
           <div className="flex items-center justify-between mb-2">
             <p className="text-sm text-text-muted">Total Receitas</p>
             <div className="w-8 h-8 bg-success/10 rounded-lg flex items-center justify-center">
-              <ArrowUpRight className="w-4 h-4 text-success" />
+              <TrendingUp className="w-4 h-4 text-success" />
             </div>
           </div>
           <p className="text-2xl font-bold text-success">{new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(totalReceitas)}</p>
@@ -88,7 +99,7 @@ export default function FinanceiroPage() {
           <div className="flex items-center justify-between mb-2">
             <p className="text-sm text-text-muted">Total Despesas</p>
             <div className="w-8 h-8 bg-danger/10 rounded-lg flex items-center justify-center">
-              <ArrowDownRight className="w-4 h-4 text-danger" />
+              <TrendingDown className="w-4 h-4 text-danger" />
             </div>
           </div>
           <p className="text-2xl font-bold text-danger">{new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(totalDespesas)}</p>
@@ -164,7 +175,19 @@ export default function FinanceiroPage() {
                     </td>
                     <td className="px-4 py-3 text-right">
                       <div className="flex items-center justify-end gap-1">
-                        <button onClick={() => { setEditingTransacao(t); setFormData({ ...t }); setModalOpen(true) }} className="p-1.5 rounded-lg hover:bg-primary/10 text-text-muted hover:text-primary transition-colors">
+                        <button onClick={() => {
+                          setEditingTransacao(t)
+                          setFormData({
+                            tipo: t.tipo,
+                            categoria: t.categoria,
+                            descricao: t.descricao,
+                            valor: t.valor,
+                            data: t.data,
+                            formaPagamento: t.formaPagamento || '',
+                            status: t.status
+                          })
+                          setModalOpen(true)
+                        }} className="p-1.5 rounded-lg hover:bg-primary/10 text-text-muted hover:text-primary transition-colors">
                           <Edit className="w-4 h-4" />
                         </button>
                         <button onClick={() => handleDelete(t.id)} className="p-1.5 rounded-lg hover:bg-danger/10 text-text-muted hover:text-danger transition-colors">
