@@ -96,7 +96,7 @@ export default function VeiculosPage() {
                     </div>
                   </div>
                   <div className="flex gap-1">
-                    <button onClick={() => { setEditingVeiculo(v); setFormData({ ...v }); setModalOpen(true) }} className="p-1.5 rounded-lg hover:bg-primary/10 text-text-muted hover:text-primary transition-colors">
+                    <button onClick={() => { setEditingVeiculo(v); setFormData({ ...v, cor: v.cor ?? '', km: v.km ?? 0 }); setModalOpen(true) }} className="p-1.5 rounded-lg hover:bg-primary/10 text-text-muted hover:text-primary transition-colors">
                       <Edit className="w-4 h-4" />
                     </button>
                     <button onClick={() => handleDelete(v.id)} className="p-1.5 rounded-lg hover:bg-danger/10 text-text-muted hover:text-danger transition-colors">

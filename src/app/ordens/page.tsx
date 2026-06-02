@@ -208,7 +208,7 @@ export default function OrdensPage() {
                       <td className="px-4 py-3 text-right">
                         <div className="flex items-center justify-end gap-1">
                           <button
-                            onClick={() => { setEditingOrdem(ordem); setFormData({ ...ordem, dataPrevisao: ordem.dataPrevisao || '' }); setModalOpen(true) }}
+                            onClick={() => { setEditingOrdem(ordem); setFormData({ ...ordem, observacoes: ordem.observacoes ?? '', dataPrevisao: ordem.dataPrevisao || '' }); setModalOpen(true) }}
                             className="p-1.5 rounded-lg hover:bg-primary/10 text-text-muted hover:text-primary transition-colors"
                           >
                             <Edit className="w-4 h-4" />

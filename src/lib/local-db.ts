@@ -89,7 +89,7 @@ export const clienteDB = {
   search: (term: string) => query<Cliente>('clientes', c => 
     c.nome.toLowerCase().includes(term.toLowerCase()) || 
     c.telefone.includes(term) ||
-    (c.cpf && c.cpf.includes(term))
+    (c.cpf?.includes(term) ?? false)
   )
 }
 

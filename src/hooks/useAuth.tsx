@@ -47,16 +47,39 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (!user) return
 
     const updateOnline = async () => {
-      await supabase.from('user_presence').upsert({
-        user_id: user.id,
-        email: user.email,
-        online: true,
-        last_seen: new Date().toISOString()
-      }, { onConflict: 'user_id' })
+      // Verifica se o usuário já existe no user_presence
+      const { data: existing } = await supabase
+        .from('user_presence')
+        .select('user_id, subscription_status')
+        .eq('user_id', user.id)
+        .single()
+
+      if (existing) {
+        // Usuário já existe: atualiza só online/last_seen, preserva subscription_status
+        await supabase.from('user_presence').update({
+          email: user.email,
+          online: true,
+          last_seen: new Date().toISOString()
+        }).eq('user_id', user.id)
+      } else {
+        // Novo usuário: cria o registro com subscription_status = 'pending'
+        await supabase.from('user_presence').insert({
+          user_id: user.id,
+          email: user.email,
+          online: true,
+          last_seen: new Date().toISOString(),
+          subscription_status: 'pending'
+        })
+      }
     }
 
     updateOnline()
-    const interval = setInterval(updateOnline, 30000)
+    const interval = setInterval(async () => {
+      await supabase.from('user_presence').update({
+        online: true,
+        last_seen: new Date().toISOString()
+      }).eq('user_id', user.id)
+    }, 30000)
 
     const handleBeforeUnload = () => {
       supabase.from('user_presence').update({ online: false }).eq('user_id', user.id)
@@ -68,6 +91,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       window.removeEventListener('beforeunload', handleBeforeUnload)
     }
   }, [user, supabase])
+
 
   // Buscar usuários online via API route
   const refreshUsers = useCallback(async () => {
