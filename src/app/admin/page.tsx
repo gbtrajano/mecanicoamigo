@@ -7,6 +7,7 @@ import { Shield, Users, Circle, XCircle, CheckCircle, Clock, Ban, RefreshCw } fr
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import type { UsuarioOnline } from '@/types'
+import Modal from '@/components/Modal'
 
 type FilterStatus = 'todos' | 'active' | 'pending' | 'cancelled' | 'refunded'
 
@@ -16,6 +17,12 @@ export default function AdminPage() {
   const [filterStatus, setFilterStatus] = useState<FilterStatus>('todos')
   const [updatingId, setUpdatingId] = useState<string | null>(null)
   const [localUsers, setLocalUsers] = useState<UsuarioOnline[]>([])
+  // Reset password modal state
+  const [resettingId, setResettingId] = useState<string | null>(null)
+  const [newPassword, setNewPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
+  const [resetError, setResetError] = useState('')
+  const [resetLoading, setResetLoading] = useState(false)
 
   useEffect(() => {
     if (!loading && !isAdmin) {
@@ -54,6 +61,42 @@ export default function AdminPage() {
       setUpdatingId(null)
     }
   }, [])
+
+  const handleResetPassword = useCallback(async (e: React.FormEvent) => {
+    e.preventDefault()
+    setResetError('')
+    if (!resettingId) return
+    if (newPassword !== confirmPassword) {
+      setResetError('As senhas não coincidem!')
+      return
+    }
+    if (newPassword.length < 6) {
+      setResetError('A senha deve ter pelo menos 6 caracteres!')
+      return
+    }
+    setResetLoading(true)
+    try {
+      const res = await fetch('/api/admin/users', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: resettingId, password: newPassword })
+      })
+      if (res.ok) {
+        setResettingId(null)
+        setNewPassword('')
+        setConfirmPassword('')
+        setResetError('Senha redefinida com sucesso!')
+        // Optionally close modal after success
+      } else {
+        const data = await res.json()
+        setResetError(data.error || 'Erro ao redefinir senha')
+      }
+    } catch (err: any) {
+      setResetError(err.message || 'Erro inesperado')
+    } finally {
+      setResetLoading(false)
+    }
+  }, [resettingId, newPassword, confirmPassword])
 
   if (loading || !isAdmin) return null
 
@@ -143,16 +186,15 @@ export default function AdminPage() {
           <button
             key={f}
             onClick={() => setFilterStatus(f)}
-            className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-              filterStatus === f
+            className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${filterStatus === f
                 ? 'bg-primary text-white'
                 : 'bg-surface border border-border text-text-muted hover:text-text'
-            }`}
+              }`}
           >
             {f === 'todos' ? 'Todos' : f === 'active' ? 'Ativos' : f === 'pending' ? 'Aguardando' : 'Bloqueados'}
             {f !== 'todos' && (
               <span className="ml-1.5 opacity-70">
-                ({f === 'active' ? counts.active : f === 'pending' ? counts.pending : counts.cancelled})
+                ({f === 'active' ? counts.active : f === 'pending' ? counts.pending : f === 'cancelled' ? counts.cancelled : 0})
               </span>
             )}
           </button>
@@ -188,6 +230,7 @@ export default function AdminPage() {
               ) : (
                 filtered.map(u => {
                   const isUpdating = updatingId === u.id
+                  const isResetting = resettingId === u.id
                   const status = u.subscriptionStatus ?? 'pending'
                   const isActive = status === 'active'
 
@@ -195,9 +238,8 @@ export default function AdminPage() {
                     <tr key={u.id} className="border-b border-border hover:bg-bg/50 transition-colors">
                       <td className="px-6 py-3 text-sm text-text font-medium">{u.email}</td>
                       <td className="px-6 py-3">
-                        <span className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-xs font-medium ${
-                          u.online ? 'bg-success/10 text-success' : 'bg-text-muted/10 text-text-muted'
-                        }`}>
+                        <span className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-xs font-medium ${u.online ? 'bg-success/10 text-success' : 'bg-text-muted/10 text-text-muted'
+                          }`}>
                           <Circle className={`w-2 h-2 ${u.online ? 'fill-success' : 'fill-text-muted'}`} />
                           {u.online ? 'Online' : 'Offline'}
                         </span>
@@ -239,6 +281,28 @@ export default function AdminPage() {
                               Revogar
                             </button>
                           )}
+                          {/* Reset Password Button */}
+                          <button
+                            onClick={() => {
+                              setResettingId(u.id)
+                              setNewPassword('')
+                              setConfirmPassword('')
+                              setResetError('')
+                            }}
+                            disabled={isResetting || isUpdating}
+                            title="Redefinir senha"
+                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-info/10 text-info hover:bg-info/20 transition-colors text-xs font-medium disabled:opacity-50"
+                          >
+                            {isResetting ? (
+                              <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                            ) : (
+                              <>
+                                <Circle className="w-3.5 h-3.5" />
+                                {/* Using Circle as a key icon alternative */}
+                              </>
+                            )}
+                            Redefinir Senha
+                          </button>
                         </div>
                       </td>
                     </tr>
@@ -264,6 +328,59 @@ export default function AdminPage() {
           </div>
         </div>
       </div>
+
+      {/* Reset Password Modal */}
+      <Modal
+        isOpen={!!resettingId}
+        onClose={() => {
+          setResettingId(null)
+          setNewPassword('')
+          setConfirmPassword('')
+          setResetError('')
+        }}
+        title="Redefinir Senha"
+        size="md"
+      >
+        {resetError && (
+          <div className="p-3 rounded-lg text-sm mb-4 bg-danger/10 text-danger">
+            {resetError}
+          </div>
+        )}
+        <form onSubmit={handleResetPassword} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-text mb-1">Nova Senha</label>
+            <input
+              type="password"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              required
+              minLength={6}
+              className="w-full px-4 py-2.5 rounded-lg border border-border bg-bg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+              placeholder="••••••••"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-text mb-1">Confirmar Nova Senha</label>
+            <input
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              required
+              minLength={6}
+              className="w-full px-4 py-2.5 rounded-lg border border-border bg-bg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+              placeholder="••••••••"
+            />
+          </div>
+          <button
+            type="submit"
+            disabled={resetLoading}
+            className="w-full bg-primary hover:bg-primary-dark text-white font-medium py-2.5 rounded-lg transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
+          >
+            {resetLoading && <RefreshCw className="w-4 h-4 animate-spin" />}
+            Redefinir Senha
+          </button>
+        </form>
+      </Modal>
     </div>
   )
 }

@@ -53,11 +53,34 @@ export async function PATCH(request: Request) {
   const supabaseAdmin = getAdminClient()
 
   try {
-    const body = await request.json() as { userId: string; subscriptionStatus: string }
-    const { userId, subscriptionStatus } = body
+    const body = await request.json()
+    const { userId, subscriptionStatus, password } = body
 
-    if (!userId || !subscriptionStatus) {
-      return NextResponse.json({ error: 'userId e subscriptionStatus são obrigatórios' }, { status: 400 })
+    if (!userId) {
+      return NextResponse.json({ error: 'userId é obrigatório' }, { status: 400 })
+    }
+
+    // If password is provided, update the user's password via auth admin
+    if (password !== undefined && password !== null) {
+      if (password.length < 6) {
+        return NextResponse.json({ error: 'A senha deve ter pelo menos 6 caracteres' }, { status: 400 })
+      }
+
+      const { error: authError } = await supabaseAdmin.auth.admin.updateUserById(
+        userId,
+        { password }
+      )
+
+      if (authError) {
+        return NextResponse.json({ error: authError.message }, { status: 500 })
+      }
+
+      return NextResponse.json({ success: true, message: 'Senha atualizada' })
+    }
+
+    // Otherwise, update subscription status
+    if (subscriptionStatus === undefined) {
+      return NextResponse.json({ error: 'subscriptionStatus ou password é obrigatório' }, { status: 400 })
     }
 
     const allowed = ['active', 'pending', 'cancelled', 'refunded']
