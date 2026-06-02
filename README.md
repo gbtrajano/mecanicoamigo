@@ -1,36 +1,105 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# OficinaPro - Sistema de Gestão para Oficinas Mecânicas
 
-## Getting Started
+Sistema completo para gestão de oficinas mecânicas, inspirado no MotorSW.
 
-First, run the development server:
+## 🚀 Tecnologias
+
+- **Next.js 15** - Framework React
+- **TypeScript** - Tipagem estática
+- **Tailwind CSS v4** - Estilização
+- **Supabase** - Autenticação e controle de acesso
+- **IndexedDB** - Banco de dados local (offline-first)
+- **Bun** - Runtime e gerenciador de pacotes
+
+## 📦 Instalação
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# Usando Bun (recomendado)
+bun install
+
+# Usando npm (alternativa)
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## ⚙️ Configuração
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. Crie um projeto no [Supabase](https://supabase.com)
+2. Copie as credenciais para `.env.local`:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```env
+NEXT_PUBLIC_SUPABASE_URL=https://seu-projeto.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=sua-anon-key
+SUPABASE_SERVICE_ROLE_KEY=sua-service-role-key
+```
 
-## Learn More
+3. Crie a tabela `user_presence` no Supabase:
 
-To learn more about Next.js, take a look at the following resources:
+```sql
+CREATE TABLE user_presence (
+  user_id UUID PRIMARY KEY,
+  email TEXT,
+  online BOOLEAN DEFAULT false,
+  last_seen TIMESTAMP DEFAULT NOW(),
+  subscription_status TEXT DEFAULT 'active',
+  subscription_start TIMESTAMP,
+  subscription_end TIMESTAMP
+);
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🏃 Desenvolvimento
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+bun run dev
+```
 
-## Deploy on Vercel
+## 📦 Build (Export Estático)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+bun run build
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+O build será gerado na pasta `dist/` e pode ser hospedado em qualquer servidor estático (Vercel, Netlify, GitHub Pages, etc).
+
+## 🎯 Funcionalidades
+
+- ✅ **Ordens de Serviço** - Crie e gerencie OS em 30 segundos
+- ✅ **Clientes** - Cadastro completo com veículos
+- ✅ **Estoque** - Controle de peças com alerta de baixo estoque
+- ✅ **Serviços** - Tabela de serviços com preços
+- ✅ **Financeiro** - Receitas, despesas e fluxo de caixa
+- ✅ **Notas Fiscais** - NF-e, NFC-e e NFS-e
+- ✅ **Relatórios** - Gráficos e estatísticas
+- ✅ **Backup/Restore** - Exporte e importe dados JSON
+- ✅ **Autenticação** - Login via Supabase
+- ✅ **Admin** - Controle de usuários online e assinaturas
+
+## 💾 Banco de Dados Local
+
+Todos os dados são armazenados no **IndexedDB** do navegador, permitindo:
+- Funcionamento offline completo
+- Independência de mensalidade para dados
+- Backup manual via exportação JSON
+- Migração entre dispositivos via importação
+
+## 🔐 Autenticação
+
+O Supabase é usado apenas para:
+- Controle de acesso (login/cadastro)
+- Monitoramento de usuários online
+- Gestão de assinaturas e reembolsos
+
+## 📱 Responsivo
+
+Interface adaptada para desktop, tablet e mobile.
+
+## 🎨 Cores (inspiradas no MotorSW)
+
+- **Primary**: #E63946 (Vermelho/Coral)
+- **Secondary**: #4FC3F7 (Azul Claro)
+- **Background**: #F8FAFC
+- **Surface**: #FFFFFF
+- **Text**: #1E293B
+
+## 📄 Licença
+
+MIT

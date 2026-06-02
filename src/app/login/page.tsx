@@ -1,135 +1,145 @@
-'use client';
+'use client'
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { Wrench, Eye, EyeOff, AlertCircle } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import Link from 'next/link';
+import { useState } from 'react'
+import { useAuth } from '@/hooks/useAuth'
+import { useRouter } from 'next/navigation'
+import { Wrench, Eye, EyeOff, Loader2 } from 'lucide-react'
 
 export default function LoginPage() {
-  const router = useRouter();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [checkingAuth, setCheckingAuth] = useState(true);
+  const [isLogin, setIsLogin] = useState(true)
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [nome, setNome] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
+  const { signIn, signUp, user } = useAuth()
+  const router = useRouter()
 
-  useEffect(() => {
-    checkAuth();
-  }, []);
-
-  async function checkAuth() {
-    try {
-      const res = await fetch('/api/auth/me');
-      const data = await res.json();
-      if (data.authenticated) {
-        router.push('/');
-        return;
-      }
-    } catch {
-      // Continue to login
-    }
-    setCheckingAuth(false);
+  if (user) {
+    router.push('/dashboard')
+    return null
   }
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setError('');
-    setLoading(true);
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setError('')
+    setLoading(true)
 
-    try {
-      const res = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        setError(data.error || 'Erro ao fazer login');
-        return;
-      }
-
-      router.push('/');
-    } catch {
-      setError('Erro ao fazer login');
-    } finally {
-      setLoading(false);
+    if (isLogin) {
+      const { error } = await signIn(email, password)
+      if (error) setError(error.message)
+    } else {
+      const { error } = await signUp(email, password, { nome })
+      if (error) setError(error.message)
+      else setError('Verifique seu email para confirmar o cadastro!')
     }
-  }
 
-  if (checkingAuth) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="animate-pulse text-muted-foreground">Carregando...</div>
-      </div>
-    );
+    setLoading(false)
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-background p-4">
-      <div className="w-full max-w-md space-y-8">
+    <div className="min-h-screen bg-bg flex items-center justify-center p-4">
+      <div className="w-full max-w-md">
         {/* Logo */}
-        <div className="flex flex-col items-center">
-          <div className="w-16 h-16 rounded-2xl bg-primary flex items-center justify-center mb-4">
-            <Wrench className="w-10 h-10 text-primary-foreground" />
+        <div className="text-center mb-8">
+          <div className="w-16 h-16 bg-primary rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+            <Wrench className="w-8 h-8 text-white" />
           </div>
-          <h1 className="text-2xl font-bold">MecanicoAmigo</h1>
-          <p className="text-muted-foreground">Sistema de Gerenciamento de Oficina</p>
+          <h1 className="text-2xl font-bold text-text">Oficina<span className="text-primary">Pro</span></h1>
+          <p className="text-text-muted text-sm mt-2">Sistema para gestão de oficinas mecânicas</p>
         </div>
 
-        {/* Login Form */}
-        <form onSubmit={handleSubmit} className="space-y-4">
+        {/* Card */}
+        <div className="bg-surface rounded-xl card-shadow-lg border border-border p-6">
+          <h2 className="text-lg font-semibold text-text mb-1">
+            {isLogin ? 'Bem-vindo de volta!' : 'Criar conta'}
+          </h2>
+          <p className="text-sm text-text-muted mb-6">
+            {isLogin ? 'Entre com suas credenciais para acessar' : 'Preencha os dados para começar'}
+          </p>
+
           {error && (
-            <div className="flex items-center gap-2 p-3 bg-destructive/10 border border-destructive/30 rounded-lg text-destructive text-sm">
-              <AlertCircle className="w-4 h-4" />
+            <div className={`p-3 rounded-lg text-sm mb-4 ${error.includes('Verifique') ? 'bg-success/10 text-success' : 'bg-danger/10 text-danger'}`}>
               {error}
             </div>
           )}
 
-          <Input
-            label="Email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            placeholder="seu@email.com"
-          />
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {!isLogin && (
+              <div>
+                <label className="block text-sm font-medium text-text mb-1">Nome da Oficina</label>
+                <input
+                  type="text"
+                  value={nome}
+                  onChange={(e) => setNome(e.target.value)}
+                  required
+                  className="w-full px-4 py-2.5 rounded-lg border border-border bg-bg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                  placeholder="Ex: Oficina do João"
+                />
+              </div>
+            )}
 
-          <div className="relative">
-            <Input
-              label="Senha"
-              type={showPassword ? 'text' : 'password'}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              placeholder="••••••••"
-            />
+            <div>
+              <label className="block text-sm font-medium text-text mb-1">Email</label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                className="w-full px-4 py-2.5 rounded-lg border border-border bg-bg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                placeholder="seu@email.com"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-text mb-1">Senha</label>
+              <div className="relative">
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  minLength={6}
+                  className="w-full px-4 py-2.5 rounded-lg border border-border bg-bg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all pr-10"
+                  placeholder="••••••••"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted hover:text-text"
+                >
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
+            </div>
+
             <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-[34px] text-muted-foreground hover:text-foreground"
+              type="submit"
+              disabled={loading}
+              className="w-full bg-primary hover:bg-primary-dark text-white font-medium py-2.5 rounded-lg transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
             >
-              {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              {loading && <Loader2 className="w-4 h-4 animate-spin" />}
+              {isLogin ? 'Entrar' : 'Criar Conta'}
+            </button>
+          </form>
+
+          <div className="mt-6 text-center">
+            <button
+              onClick={() => { setIsLogin(!isLogin); setError('') }}
+              className="text-sm text-primary hover:text-primary-dark font-medium"
+            >
+              {isLogin ? 'Não tem conta? Cadastre-se' : 'Já tem conta? Entre'}
             </button>
           </div>
+        </div>
 
-          <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? 'Entrando...' : 'Entrar'}
-          </Button>
-        </form>
-
-        {/* Register Link */}
-        <p className="text-center text-sm text-muted-foreground">
-          Não tem uma conta?{' '}
-          <Link href="/register" className="text-primary hover:underline">
-            Criar conta
-          </Link>
+        {/* Info */}
+        <p className="text-center text-xs text-text-muted mt-6">
+          Seus dados são armazenados localmente no seu navegador. 
+          <br />A autenticação é usada apenas para controle de acesso.
         </p>
       </div>
     </div>
-  );
+  )
 }
