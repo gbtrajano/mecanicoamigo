@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { notaFiscalDB, ordemDB, clienteDB } from '@/lib/local-db'
 import Modal from '@/components/Modal'
 import type { NotaFiscal, OrdemServico, Cliente } from '@/types'
-import { Plus, Search, Receipt, Trash2, Edit, FileText, CheckCircle } from 'lucide-react'
+import { Plus, Search, Receipt, Trash2, Edit } from 'lucide-react'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 
@@ -30,17 +30,16 @@ export default function NotasFiscaisPage() {
   }
 
   const filtered = notas.filter(n => {
-    const ordem = ordens.find(o => o.id === n.ordemId)
     const cliente = clientes.find(c => c.id === n.clienteId)
     return !search || n.numero.includes(search) || cliente?.nome.toLowerCase().includes(search.toLowerCase())
   })
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    const ordem = ordens.find(o => o.id === formData.ordemId)
+    const ordemSelecionada = ordens.find(o => o.id === formData.ordemId)
     const data = {
       ...formData,
-      valor: ordem?.valorTotal || formData.valor,
+      valor: ordemSelecionada?.valorTotal || formData.valor,
       dataEmissao: editingNota?.dataEmissao || new Date().toISOString()
     }
     if (editingNota) {
@@ -166,8 +165,8 @@ export default function NotasFiscaisPage() {
           <div>
             <label className="block text-sm font-medium text-text mb-1">Ordem de Serviço *</label>
             <select value={formData.ordemId} onChange={e => {
-              const ordem = ordens.find(o => o.id === e.target.value)
-              setFormData({...formData, ordemId: e.target.value, clienteId: ordem?.clienteId || '', valor: ordem?.valorTotal || 0})
+              const ordemSelecionada = ordens.find(o => o.id === e.target.value)
+              setFormData({...formData, ordemId: e.target.value, clienteId: ordemSelecionada?.clienteId || '', valor: ordemSelecionada?.valorTotal || 0})
             }} required
               className="w-full px-3 py-2 rounded-lg border border-border bg-bg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary">
               <option value="">Selecione...</option>

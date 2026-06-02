@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { ordemDB, clienteDB, veiculoDB, servicoDB, pecaDB } from '@/lib/local-db'
 import Modal from '@/components/Modal'
 import type { OrdemServico, Cliente, Veiculo, Servico, Peca } from '@/types'
-import { Plus, Search, Filter, Wrench, CheckCircle, Clock, XCircle, ChevronRight, Trash2, Edit } from 'lucide-react'
+import { Plus, Search, Filter, Wrench, CheckCircle, Clock, XCircle, Trash2, Edit } from 'lucide-react'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 
@@ -136,7 +136,6 @@ export default function OrdensPage() {
         </button>
       </div>
 
-      {/* Filters */}
       <div className="flex flex-wrap gap-3">
         <div className="relative flex-1 min-w-[200px]">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
@@ -164,7 +163,6 @@ export default function OrdensPage() {
         </div>
       </div>
 
-      {/* Table */}
       <div className="bg-surface rounded-xl border border-border overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
@@ -232,7 +230,6 @@ export default function OrdensPage() {
         </div>
       </div>
 
-      {/* Modal */}
       <Modal
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
@@ -294,7 +291,6 @@ export default function OrdensPage() {
             </div>
           </div>
 
-          {/* Serviços */}
           <div>
             <div className="flex items-center justify-between mb-2">
               <label className="text-sm font-medium text-text">Serviços</label>
@@ -339,7 +335,6 @@ export default function OrdensPage() {
             ))}
           </div>
 
-          {/* Peças */}
           <div>
             <div className="flex items-center justify-between mb-2">
               <label className="text-sm font-medium text-text">Peças</label>

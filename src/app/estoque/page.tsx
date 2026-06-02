@@ -4,14 +4,17 @@ import { useEffect, useState } from 'react'
 import { pecaDB } from '@/lib/local-db'
 import Modal from '@/components/Modal'
 import type { Peca } from '@/types'
-import { Plus, Search, AlertTriangle, Trash2, Edit, Package, ArrowUpDown } from 'lucide-react'
+import { Plus, Search, AlertTriangle, Trash2, Edit } from 'lucide-react'
 
 export default function EstoquePage() {
   const [pecas, setPecas] = useState<Peca[]>([])
   const [search, setSearch] = useState('')
   const [modalOpen, setModalOpen] = useState(false)
   const [editingPeca, setEditingPeca] = useState<Peca | null>(null)
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{
+    codigo: string; nome: string; descricao: string; quantidade: number; precoCusto: number; precoVenda: number;
+    minimo: number; fornecedor: string; categoria: string
+  }>({
     codigo: '', nome: '', descricao: '', quantidade: 0, precoCusto: 0, precoVenda: 0,
     minimo: 5, fornecedor: '', categoria: ''
   })
@@ -66,7 +69,6 @@ export default function EstoquePage() {
         </button>
       </div>
 
-      {/* Alertas */}
       {baixoEstoque.length > 0 && (
         <div className="bg-warning/10 border border-warning/20 rounded-xl p-4 flex items-center gap-3">
           <AlertTriangle className="w-5 h-5 text-warning flex-shrink-0" />
@@ -126,7 +128,21 @@ export default function EstoquePage() {
                     <td className="px-4 py-3 text-sm font-medium text-text">R$ {p.precoVenda.toFixed(2)}</td>
                     <td className="px-4 py-3 text-right">
                       <div className="flex items-center justify-end gap-1">
-                        <button onClick={() => { setEditingPeca(p); setFormData({ ...p }); setModalOpen(true) }} className="p-1.5 rounded-lg hover:bg-primary/10 text-text-muted hover:text-primary transition-colors">
+                        <button onClick={() => {
+                          setEditingPeca(p)
+                          setFormData({
+                            codigo: p.codigo,
+                            nome: p.nome,
+                            descricao: p.descricao || '',
+                            quantidade: p.quantidade,
+                            precoCusto: p.precoCusto,
+                            precoVenda: p.precoVenda,
+                            minimo: p.minimo,
+                            fornecedor: p.fornecedor || '',
+                            categoria: p.categoria || ''
+                          })
+                          setModalOpen(true)
+                        }} className="p-1.5 rounded-lg hover:bg-primary/10 text-text-muted hover:text-primary transition-colors">
                           <Edit className="w-4 h-4" />
                         </button>
                         <button onClick={() => handleDelete(p.id)} className="p-1.5 rounded-lg hover:bg-danger/10 text-text-muted hover:text-danger transition-colors">

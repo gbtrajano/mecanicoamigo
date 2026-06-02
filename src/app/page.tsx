@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { Wrench, CheckCircle, BarChart3, Package, Receipt, DollarSign, ArrowRight, Shield, Clock, Users } from 'lucide-react'
+import { Wrench, CheckCircle, BarChart3, Package, Receipt, DollarSign, ArrowRight, Clock, Users } from 'lucide-react'
 
 export default function HomePage() {
   return (
