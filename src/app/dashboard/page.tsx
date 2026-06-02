@@ -6,7 +6,7 @@ import { getDashboardStats } from '@/lib/local-db'
 import type { DashboardStats } from '@/types'
 import {
   Wrench, CheckCircle, DollarSign, TrendingUp,
-  AlertTriangle, Users, ArrowUpRight, ArrowDownRight
+  AlertTriangle, Users
 } from 'lucide-react'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
