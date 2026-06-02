@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useAuth } from '@/hooks/useAuth'
 import {
-  LayoutDashboard, Wrench, Package, Users, FileText, 
+  LayoutDashboard, Wrench, Package, Users, 
   DollarSign, Settings, LogOut, ChevronLeft, ChevronRight,
   BarChart3, Receipt, Shield, Car
 } from 'lucide-react'
@@ -33,7 +33,6 @@ export default function Sidebar() {
 
   return (
     <aside className={`bg-surface border-r border-border flex flex-col transition-all duration-300 ${collapsed ? 'w-16' : 'w-64'}`}>
-      {/* Logo */}
       <div className="h-16 flex items-center justify-center border-b border-border px-4">
         <div className={`flex items-center gap-2 ${collapsed ? 'justify-center' : ''}`}>
           <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center flex-shrink-0">
@@ -45,7 +44,6 @@ export default function Sidebar() {
         </div>
       </div>
 
-      {/* Menu */}
       <nav className="flex-1 py-4 px-2 space-y-1 overflow-y-auto">
         {menuItems.map((item) => {
           const Icon = item.icon
@@ -83,7 +81,6 @@ export default function Sidebar() {
         )}
       </nav>
 
-      {/* Footer */}
       <div className="border-t border-border p-2">
         <button
           onClick={() => setCollapsed(!collapsed)}

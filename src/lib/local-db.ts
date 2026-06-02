@@ -31,7 +31,7 @@ async function getAll<T>(storeName: string): Promise<T[]> {
     const tx = db.transaction(storeName, 'readonly')
     const store = tx.objectStore(storeName)
     const request = store.getAll()
-    request.onsuccess = () => resolve(request.result)
+    request.onsuccess = () => resolve(request.result as T[])
     request.onerror = () => reject(request.error)
   })
 }
@@ -42,7 +42,7 @@ async function getById<T>(storeName: string, id: string): Promise<T | null> {
     const tx = db.transaction(storeName, 'readonly')
     const store = tx.objectStore(storeName)
     const request = store.get(id)
-    request.onsuccess = () => resolve(request.result || null)
+    request.onsuccess = () => resolve((request.result as T) || null)
     request.onerror = () => reject(request.error)
   })
 }
@@ -160,19 +160,19 @@ export const notaFiscalDB = {
 
 // ===== CONFIG =====
 export const configDB = {
-  get: async (key: string) => {
+  get: async (key: string): Promise<unknown> => {
     const db = await openDB()
-    return new Promise<any>((resolve, reject) => {
+    return new Promise((resolve, reject) => {
       const tx = db.transaction('config', 'readonly')
       const store = tx.objectStore('config')
       const request = store.get(key)
-      request.onsuccess = () => resolve(request.result?.value || null)
+      request.onsuccess = () => resolve((request.result as { value: unknown } | undefined)?.value || null)
       request.onerror = () => reject(request.error)
     })
   },
-  set: async (key: string, value: any) => {
+  set: async (key: string, value: unknown): Promise<void> => {
     const db = await openDB()
-    return new Promise<void>((resolve, reject) => {
+    return new Promise((resolve, reject) => {
       const tx = db.transaction('config', 'readwrite')
       const store = tx.objectStore('config')
       const request = store.put({ id: key, value })
@@ -220,7 +220,7 @@ export async function getDashboardStats(): Promise<{
 
 // ===== EXPORTAR/IMPORTAR DADOS =====
 export async function exportarDados(): Promise<string> {
-  const dados: Record<string, any[]> = {}
+  const dados: Record<string, unknown[]> = {}
   for (const store of STORES) {
     dados[store] = await getAll(store)
   }
@@ -228,20 +228,18 @@ export async function exportarDados(): Promise<string> {
 }
 
 export async function importarDados(jsonStr: string): Promise<void> {
-  const dados = JSON.parse(jsonStr)
+  const dados = JSON.parse(jsonStr) as Record<string, unknown[]>
   const db = await openDB()
 
   for (const store of STORES) {
     if (dados[store]) {
       const tx = db.transaction(store, 'readwrite')
       const objectStore = tx.objectStore(store)
-      // Limpar primeiro
       await new Promise<void>((resolve, reject) => {
         const clearReq = objectStore.clear()
         clearReq.onsuccess = () => resolve()
         clearReq.onerror = () => reject(clearReq.error)
       })
-      // Inserir dados
       for (const item of dados[store]) {
         await new Promise<void>((resolve, reject) => {
           const req = objectStore.put(item)

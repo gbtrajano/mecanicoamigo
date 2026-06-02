@@ -1,10 +1,10 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { ordemDB, transacaoDB, pecaDB, clienteDB } from '@/lib/local-db'
-import type { OrdemServico, Transacao, Peca, Cliente } from '@/types'
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from 'recharts'
-import { Download, FileText, BarChart3, TrendingUp, Calendar } from 'lucide-react'
+import { ordemDB, transacaoDB, clienteDB } from '@/lib/local-db'
+import type { OrdemServico, Transacao, Cliente } from '@/types'
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts'
+import { TrendingUp, ArrowUpRight, ArrowDownRight, DollarSign } from 'lucide-react'
 import { format, startOfMonth, endOfMonth, eachMonthOfInterval, subMonths } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 
@@ -13,18 +13,16 @@ const COLORS = ['#E63946', '#4FC3F7', '#22C55E', '#F59E0B', '#8B5CF6']
 export default function RelatoriosPage() {
   const [ordens, setOrdens] = useState<OrdemServico[]>([])
   const [transacoes, setTransacoes] = useState<Transacao[]>([])
-  const [pecas, setPecas] = useState<Peca[]>([])
   const [clientes, setClientes] = useState<Cliente[]>([])
   const [periodo, setPeriodo] = useState(6)
 
   useEffect(() => { loadData() }, [])
 
   const loadData = async () => {
-    const [o, t, p, c] = await Promise.all([ordemDB.getAll(), transacaoDB.getAll(), pecaDB.getAll(), clienteDB.getAll()])
-    setOrdens(o); setTransacoes(t); setPecas(p); setClientes(c)
+    const [o, t, c] = await Promise.all([ordemDB.getAll(), transacaoDB.getAll(), clienteDB.getAll()])
+    setOrdens(o); setTransacoes(t); setClientes(c)
   }
 
-  // Dados para gráficos
   const meses = eachMonthOfInterval({ start: subMonths(new Date(), periodo - 1), end: new Date() })
 
   const faturamentoPorMes = meses.map(m => {
@@ -43,15 +41,9 @@ export default function RelatoriosPage() {
     { name: 'Cancelada', value: ordens.filter(o => o.status === 'cancelada').length },
   ].filter(d => d.value > 0)
 
-  const topServicos = ordens.flatMap(o => o.servicos).reduce((acc, s) => {
-    acc[s.servicoId] = (acc[s.servicoId] || 0) + s.quantidade
-    return acc
-  }, {} as Record<string, number>)
-
-  const topPecas = ordens.flatMap(o => o.pecas).reduce((acc, p) => {
-    acc[p.pecaId] = (acc[p.pecaId] || 0) + p.quantidade
-    return acc
-  }, {} as Record<string, number>)
+  const totalReceitas = transacoes.filter(t => t.tipo === 'receita').reduce((s, t) => s + t.valor, 0)
+  const totalDespesas = transacoes.filter(t => t.tipo === 'despesa').reduce((s, t) => s + t.valor, 0)
+  const saldo = totalReceitas - totalDespesas
 
   const formatCurrency = (value: number) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value)
 
@@ -72,9 +64,41 @@ export default function RelatoriosPage() {
         </div>
       </div>
 
+      {/* Cards resumo */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="bg-surface rounded-xl p-5 border border-border">
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-sm text-text-muted">Total Receitas</p>
+            <div className="w-8 h-8 bg-success/10 rounded-lg flex items-center justify-center">
+              <ArrowUpRight className="w-4 h-4 text-success" />
+            </div>
+          </div>
+          <p className="text-2xl font-bold text-success">{formatCurrency(totalReceitas)}</p>
+        </div>
+        <div className="bg-surface rounded-xl p-5 border border-border">
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-sm text-text-muted">Total Despesas</p>
+            <div className="w-8 h-8 bg-danger/10 rounded-lg flex items-center justify-center">
+              <ArrowDownRight className="w-4 h-4 text-danger" />
+            </div>
+          </div>
+          <p className="text-2xl font-bold text-danger">{formatCurrency(totalDespesas)}</p>
+        </div>
+        <div className="bg-surface rounded-xl p-5 border border-border">
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-sm text-text-muted">Saldo</p>
+            <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
+              <DollarSign className="w-4 h-4 text-primary" />
+            </div>
+          </div>
+          <p className={`text-2xl font-bold ${saldo >= 0 ? 'text-success' : 'text-danger'}`}>
+            {formatCurrency(saldo)}
+          </p>
+        </div>
+      </div>
+
       {/* Gráficos */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Faturamento */}
         <div className="bg-surface rounded-xl p-5 border border-border">
           <div className="flex items-center gap-2 mb-4">
             <TrendingUp className="w-5 h-5 text-primary" />
@@ -91,10 +115,9 @@ export default function RelatoriosPage() {
           </ResponsiveContainer>
         </div>
 
-        {/* Status das Ordens */}
         <div className="bg-surface rounded-xl p-5 border border-border">
           <div className="flex items-center gap-2 mb-4">
-            <BarChart3 className="w-5 h-5 text-secondary-dark" />
+            <TrendingUp className="w-5 h-5 text-secondary-dark" />
             <h3 className="font-semibold text-text">Status das Ordens</h3>
           </div>
           <ResponsiveContainer width="100%" height={250}>
@@ -126,11 +149,11 @@ export default function RelatoriosPage() {
           </div>
           <div className="p-4 bg-bg rounded-lg">
             <p className="text-xs text-text-muted mb-1">Faturamento Total</p>
-            <p className="text-xl font-bold text-success">{formatCurrency(transacoes.filter(t => t.tipo === 'receita').reduce((s, t) => s + t.valor, 0))}</p>
+            <p className="text-xl font-bold text-success">{formatCurrency(totalReceitas)}</p>
           </div>
           <div className="p-4 bg-bg rounded-lg">
             <p className="text-xs text-text-muted mb-1">Despesas Totais</p>
-            <p className="text-xl font-bold text-danger">{formatCurrency(transacoes.filter(t => t.tipo === 'despesa').reduce((s, t) => s + t.valor, 0))}</p>
+            <p className="text-xl font-bold text-danger">{formatCurrency(totalDespesas)}</p>
           </div>
           <div className="p-4 bg-bg rounded-lg">
             <p className="text-xs text-text-muted mb-1">Total de Clientes</p>
