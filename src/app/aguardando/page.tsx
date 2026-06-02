@@ -23,7 +23,7 @@ export default function AguardandoPage() {
             <Wrench className="w-8 h-8 text-white" />
           </div>
           <h1 className="text-2xl font-bold text-text">
-            Oficina<span className="text-primary">Pro</span>
+            Mecânico<span className="text-primary">Amigo</span>
           </h1>
         </div>
 

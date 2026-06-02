@@ -7,7 +7,7 @@ import AppLayout from "@/components/AppLayout";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "OficinaPro - Gestão de Oficinas Mecânicas",
+  title: "MecânicoAmigo - Gestão de Oficinas Mecânicas",
   description: "Sistema completo para gestão de oficinas mecânicas. Ordens de serviço, estoque, financeiro e mais.",
 };
 

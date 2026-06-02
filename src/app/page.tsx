@@ -222,7 +222,7 @@ export default function HomePage() {
       <footer className="py-8 border-t border-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <p className="text-sm text-text-muted">
-            © 2026 OficinaPro. Todos os direitos reservados.
+            © 2026 MecânicoAmigo. Todos os direitos reservados.
           </p>
         </div>
       </footer>

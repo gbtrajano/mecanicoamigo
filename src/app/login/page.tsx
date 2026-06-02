@@ -69,7 +69,7 @@ export default function LoginPage() {
           <div className="w-16 h-16 bg-primary rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
             <Wrench className="w-8 h-8 text-white" />
           </div>
-          <h1 className="text-2xl font-bold text-text">Oficina<span className="text-primary">Pro</span></h1>
+          <h1 className="text-2xl font-bold text-text">Mecânico<span className="text-primary">Amigo</span></h1>
           <p className="text-text-muted text-sm mt-2">Sistema para gestão de oficinas mecânicas</p>
         </div>
 

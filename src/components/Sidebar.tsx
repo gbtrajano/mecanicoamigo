@@ -39,7 +39,7 @@ export default function Sidebar() {
             <Wrench className="w-5 h-5 text-white" />
           </div>
           {!collapsed && (
-            <span className="font-bold text-lg text-text">Oficina<span className="text-primary">Pro</span></span>
+            <span className="font-bold text-lg text-text">Mecânico<span className="text-primary">Amigo</span></span>
           )}
         </div>
       </div>
