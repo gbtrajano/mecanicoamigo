@@ -22,6 +22,7 @@ import {
   List,
   User,
   Box,
+  UserCog,
 } from "lucide-react";
 
 const menuItems = [
@@ -30,6 +31,7 @@ const menuItems = [
   { href: "/ordens", label: "Ordens de Serviço", icon: Wrench },
   { href: "/minhas-ordens", label: "Minhas Ordens", icon: User },
   { href: "/clientes", label: "Clientes", icon: Users },
+  { href: "/equipe", label: "Equipe", icon: UserCog },
   { href: "/veiculos", label: "Veículos", icon: Car },
   { href: "/estoque", label: "Estoque", icon: Package },
   { href: "/almoxarifado", label: "Almoxarifado", icon: Box },
