@@ -91,8 +91,10 @@ export default function AdminPage() {
         const data = await res.json()
         setResetError(data.error || 'Erro ao redefinir senha')
       }
-    } catch (err: any) {
-      setResetError(err.message || 'Erro inesperado')
+    } catch (err) {
+      // Since we don't know the type, we can check if it's an Error
+      const errorMessage = err instanceof Error ? err.message : 'Erro inesperado';
+      setResetError(errorMessage);
     } finally {
       setResetLoading(false)
     }

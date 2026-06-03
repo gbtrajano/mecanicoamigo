@@ -115,9 +115,11 @@ export default function EstoquePage() {
       setTimeout(() => {
         setImportModalOpen(false)
       }, 2000)
-    } catch (err: any) {
-      setImportError(err.message || 'Erro desconhecido durante a importação')
-      console.error('Import error:', err)
+    } catch (err) {
+      // Since we don't know the type, we can check if it's an Error
+      const errorMessage = err instanceof Error ? err.message : 'Erro desconhecido durante a importação';
+      setImportError(errorMessage);
+      console.error('Import error:', err);
     } finally {
       setImportLoading(false)
     }
@@ -353,11 +355,12 @@ export default function EstoquePage() {
               type="file"
               accept=".xlsx,.xls"
               onChange={(e) => {
-                if (e.target.files[0]) {
+                const fileInput = e.target as HTMLInputElement;
+                if (fileInput.files && fileInput.files.length > 0 && fileInput.files[0]) {
                   setImportError('');
                   setImportSuccess('');
                   // Basic validation
-                  const file = e.target.files[0];
+                  const file = fileInput.files[0];
                   if (!file.name.match(/\.(xlsx|xls)$/i)) {
                     setImportError('Por favor, selecione um arquivo Excel válido (.xlsx ou .xls)');
                     return;
