@@ -172,29 +172,29 @@ export default function ClientesPage() {
       <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} title={editingCliente ? 'Editar Cliente' : 'Novo Cliente'}>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-text mb-1">Nome *</label>
+            <label className="block text-sm font-medium text-text mb-1">Nome</label>
             <input value={formData.nome} onChange={e => setFormData({...formData, nome: e.target.value})} required
               className="w-full px-3 py-2 rounded-lg border border-border bg-bg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary" />
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-text mb-1">Telefone *</label>
+              <label className="block text-sm font-medium text-text mb-1">Telefone</label>
               <input value={formData.telefone} onChange={e => setFormData({...formData, telefone: e.target.value})} required
                 className="w-full px-3 py-2 rounded-lg border border-border bg-bg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-text mb-1">CPF</label>
+              <label className="block text-sm font-medium text-text mb-1">CPF (Opcional)</label>
               <input value={formData.cpf} onChange={e => setFormData({...formData, cpf: e.target.value})}
                 className="w-full px-3 py-2 rounded-lg border border-border bg-bg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary" />
             </div>
           </div>
           <div>
-            <label className="block text-sm font-medium text-text mb-1">Email</label>
+            <label className="block text-sm font-medium text-text mb-1">Email (Opcional)</label>
             <input type="email" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})}
               className="w-full px-3 py-2 rounded-lg border border-border bg-bg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary" />
           </div>
           <div>
-            <label className="block text-sm font-medium text-text mb-1">Endereço</label>
+            <label className="block text-sm font-medium text-text mb-1">Endereço (Opcional)</label>
             <input value={formData.endereco} onChange={e => setFormData({...formData, endereco: e.target.value})}
               className="w-full px-3 py-2 rounded-lg border border-border bg-bg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary" />
           </div>

@@ -172,12 +172,27 @@ export default function LoginPage() {
           </form>
 
           <div className="mt-6 text-center">
-            <button
-              onClick={() => { setIsLogin(!isLogin); setError(''); setConfirmPassword('') }}
-              className="text-sm text-primary hover:text-primary-dark font-medium"
-            >
-              {isLogin ? 'Não tem conta? Cadastre-se' : 'Já tem conta? Entre'}
-            </button>
+            {isLogin ? (
+              <>
+                Não tem conta?{' '}
+                <button
+                  onClick={() => { setIsLogin(!isLogin); setError(''); setConfirmPassword('') }}
+                  className="text-sm text-primary hover:text-primary-dark font-medium hover:underline"
+                >
+                  Cadastre-se
+                </button>
+              </>
+            ) : (
+              <>
+                Já tem conta?{' '}
+                <button
+                  onClick={() => { setIsLogin(!isLogin); setError(''); setConfirmPassword('') }}
+                  className="text-sm text-primary hover:text-primary-dark font-medium hover:underline"
+                >
+                  Entre
+                </button>
+              </>
+            )}
           </div>
         </div>
 

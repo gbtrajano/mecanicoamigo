@@ -291,16 +291,8 @@ export default function AdminPage() {
                             }}
                             disabled={isResetting || isUpdating}
                             title="Redefinir senha"
-                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-info/10 text-info hover:bg-info/20 transition-colors text-xs font-medium disabled:opacity-50"
+                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition-colors text-xs font-medium disabled:opacity-50"
                           >
-                            {isResetting ? (
-                              <RefreshCw className="w-3.5 h-3.5 animate-spin" />
-                            ) : (
-                              <>
-                                <Circle className="w-3.5 h-3.5" />
-                                {/* Using Circle as a key icon alternative */}
-                              </>
-                            )}
                             Redefinir Senha
                           </button>
                         </div>
