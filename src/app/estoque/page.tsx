@@ -57,11 +57,12 @@ export default function EstoquePage() {
     setImportSuccess('')
 
     try {
-      if (!e.target.elements.namedItem('file') || !(e.target.elements.namedItem('file') as HTMLInputElement).files?.[0]) {
+      const form = e.target as HTMLFormElement;
+      if (!form.elements.namedItem('file') || !(form.elements.namedItem('file') as HTMLInputElement).files?.[0]) {
         throw new Error('Nenhum arquivo selecionado')
       }
 
-      const file = (e.target.elements.namedItem('file') as HTMLInputElement).files![0]
+      const file = (form.elements.namedItem('file') as HTMLInputElement).files[0];
       
       // Check file size (10MB limit)
       if (file.size > 10 * 1024 * 1024) {
@@ -87,7 +88,8 @@ export default function EstoquePage() {
           precoVenda: 45.90,
           minimo: 5,
           fornecedor: 'Fornecedor Importado',
-          categoria: 'Filtros'
+          categoria: 'Filtros',
+          createdAt: new Date().toISOString()
         },
         {
           id: 'import-2',
@@ -99,7 +101,8 @@ export default function EstoquePage() {
           precoVenda: 150.00,
           minimo: 3,
           fornecedor: 'Fornecedor Importado',
-          categoria: 'Freios'
+          categoria: 'Freios',
+          createdAt: new Date().toISOString()
         }
       ]
 
