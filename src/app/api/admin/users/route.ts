@@ -32,15 +32,23 @@ export async function GET() {
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
 
-    const users = (data || []).map((u: UserPresence) => ({
-      id: u.user_id,
-      email: u.email,
-      online: u.online,
-      ultimoAcesso: u.last_seen,
-      subscriptionStatus: u.subscription_status,
-      subscriptionStart: u.subscription_start,
-      subscriptionEnd: u.subscription_end
-    }))
+    const users = (data || []).map((u: UserPresence) => {
+      // Consider user online if last_seen is within the last 2 minutes
+      const lastSeen = new Date(u.last_seen);
+      const now = new Date();
+      const minutesDiff = (now.getTime() - lastSeen.getTime()) / (1000 * 60);
+      const isOnline = minutesDiff < 2; // Online if seen in last 2 minutes
+      
+      return ({
+        id: u.user_id,
+        email: u.email,
+        online: isOnline,
+        ultimoAcesso: u.last_seen,
+        subscriptionStatus: u.subscription_status,
+        subscriptionStart: u.subscription_start,
+        subscriptionEnd: u.subscription_end
+      })
+    })
 
     return NextResponse.json({ users })
   } catch (err: unknown) {
