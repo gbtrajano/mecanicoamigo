@@ -58,11 +58,12 @@ export default function EstoquePage() {
 
     try {
       const form = e.target as HTMLFormElement;
-      if (!form.elements.namedItem('file') || !(form.elements.namedItem('file') as HTMLInputElement).files?.[0]) {
+      const fileInput = form.elements.namedItem('file') as HTMLInputElement | null;
+      if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
         throw new Error('Nenhum arquivo selecionado')
       }
 
-      const file = (form.elements.namedItem('file') as HTMLInputElement).files[0];
+      const file = fileInput.files![0];
       
       // Check file size (10MB limit)
       if (file.size > 10 * 1024 * 1024) {
