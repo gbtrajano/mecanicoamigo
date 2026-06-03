@@ -82,7 +82,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }, 30000)
 
     const handleBeforeUnload = () => {
-      supabase.from('user_presence').update({ online: false }).eq('user_id', user.id)
+      supabase.from('user_presence').update({ 
+        online: false,
+        last_seen: new Date().toISOString()
+      }).eq('user_id', user.id)
     }
     window.addEventListener('beforeunload', handleBeforeUnload)
 
@@ -123,7 +126,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signOut = async () => {
     if (user) {
-      await supabase.from('user_presence').update({ online: false }).eq('user_id', user.id)
+      await supabase.from('user_presence').update({ 
+        online: false,
+        last_seen: new Date().toISOString()
+      }).eq('user_id', user.id)
     }
     await supabase.auth.signOut()
     setUser(null)
