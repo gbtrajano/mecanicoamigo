@@ -157,19 +157,8 @@ export const notaFiscalDB = {
     add('notasFiscais', { ...nf, id: uuidv4(), createdAt: new Date().toISOString() }),
   update: (nf: NotaFiscal) => update('notasFiscais', nf),
   delete: (id: string) => remove('notasFiscais', id)
-};
+}
 
-// ===== USUARIOS =====
-export const usuarioDB = {
-  getAll: () => getAll<Usuario>('usuarios'),
-  getById: (id: string) => getById<Usuario>('usuarios', id),
-  add: (usuario: Omit<Usuario, 'id' | 'createdAt'>) =>
-    add('usuarios', { ...usuario, id: uuidv4(), createdAt: new Date().toISOString() }),
-  update: (usuario: Usuario) => update('usuarios', usuario),
-  delete: (id: string) => remove('usuarios', id)
-};
-
-// ===== CONFIG =====
 // ===== CONFIG =====
 export const configDB = {
   get: async (key: string): Promise<unknown> => {

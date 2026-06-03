@@ -1,13 +1,12 @@
 import { v4 as uuidv4 } from 'uuid'
-import type { Cliente, Veiculo, Servico, Peca, OrdemServico, Transacao, NotaFiscal, Usuario } from '@/types'
+import type { Cliente, Veiculo, Servico, Peca, OrdemServico, Transacao, NotaFiscal } from '@/types'
 
 const DB_NAME = 'OficinaDB'
 const DB_VERSION = 1
 
 const STORES = [
-  'clientes', 'veiculos', 'servicos', 'pecas',
-  'ordens', 'transacoes', 'notasFiscais', 'config',
-  'usuarios'
+  'clientes', 'veiculos', 'servicos', 'pecas', 
+  'ordens', 'transacoes', 'notasFiscais', 'config'
 ] as const
 
 function openDB(): Promise<IDBDatabase> {
@@ -157,19 +156,8 @@ export const notaFiscalDB = {
     add('notasFiscais', { ...nf, id: uuidv4(), createdAt: new Date().toISOString() }),
   update: (nf: NotaFiscal) => update('notasFiscais', nf),
   delete: (id: string) => remove('notasFiscais', id)
-};
+}
 
-// ===== USUARIOS =====
-export const usuarioDB = {
-  getAll: () => getAll<Usuario>('usuarios'),
-  getById: (id: string) => getById<Usuario>('usuarios', id),
-  add: (usuario: Omit<Usuario, 'id' | 'createdAt'>) =>
-    add('usuarios', { ...usuario, id: uuidv4(), createdAt: new Date().toISOString() }),
-  update: (usuario: Usuario) => update('usuarios', usuario),
-  delete: (id: string) => remove('usuarios', id)
-};
-
-// ===== CONFIG =====
 // ===== CONFIG =====
 export const configDB = {
   get: async (key: string): Promise<unknown> => {

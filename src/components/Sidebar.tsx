@@ -18,11 +18,16 @@ import {
   Receipt,
   Shield,
   Car,
+  FileText,
+  List,
+  User,
 } from "lucide-react";
 
 const menuItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/servicos", label: "Serviços", icon: List },
   { href: "/ordens", label: "Ordens de Serviço", icon: Wrench },
+  { href: "/minhas-ordens", label: "Minhas Ordens", icon: User },
   { href: "/clientes", label: "Clientes", icon: Users },
   { href: "/veiculos", label: "Veículos", icon: Car },
   { href: "/estoque", label: "Estoque", icon: Package },
@@ -30,6 +35,7 @@ const menuItems = [
   { href: "/notas-fiscais", label: "Notas Fiscais", icon: Receipt },
   { href: "/relatorios", label: "Relatórios", icon: BarChart3 },
   { href: "/configuracoes", label: "Configurações", icon: Settings },
+  { href: "/orcamentos", label: "Orçamentos", icon: FileText },
 ];
 
 const adminItem = { href: "/admin", label: "Admin", icon: Shield };

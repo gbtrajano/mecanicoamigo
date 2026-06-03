@@ -73,7 +73,7 @@ export default function AdminPage() {
     if (isAdmin) fetchKeys()
   }, [isAdmin, fetchKeys])
 
-  const updateSubscription = useCallback(async (userId: string, subscriptionStatus: string) => {
+  const updateSubscription = useCallback(async (userId: string, subscriptionStatus: UsuarioOnline['subscriptionStatus']) => {
     setUpdatingId(userId)
     try {
       const res = await fetch('/api/admin/users', {
@@ -83,7 +83,7 @@ export default function AdminPage() {
       })
       if (res.ok) {
         setLocalUsers(prev => prev.map(u =>
-          u.id === userId ? { ...u, subscriptionStatus } : u
+          u.id === userId ? ({ ...u, subscriptionStatus } as UsuarioOnline) : u
         ))
       }
     } catch (err) {
@@ -171,7 +171,7 @@ export default function AdminPage() {
 
   const filtered = filterStatus === 'todos'
     ? localUsers
-    : localUsers.filter(u => (u.subscriptionStatus ?? 'pending') === filterStatus)
+    : localUsers.filter(u => (u.subscriptionStatus ?? 'pending') === filterStatus);
 
   const counts = {
     active: localUsers.filter(u => u.subscriptionStatus === 'active').length,

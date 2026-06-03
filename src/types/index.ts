@@ -44,11 +44,21 @@ export interface Peca {
   createdAt: string;
 }
 
+export interface Usuario {
+  id: string;
+  nome: string;
+  email?: string;
+  telefone?: string;
+  papel: 'admin' | 'funcionario';
+  createdAt: string;
+}
+
 export interface OrdemServico {
   id: string;
   numero: string;
   clienteId: string;
   veiculoId: string;
+  responsavelId?: string; // ID do funcionário responsável
   status: 'pendente' | 'em_andamento' | 'concluida' | 'cancelada';
   servicos: { servicoId: string; quantidade: number; preco: number }[];
   pecas: { pecaId: string; quantidade: number; preco: number }[];
@@ -57,7 +67,6 @@ export interface OrdemServico {
   dataEntrada: string;
   dataPrevisao?: string;
   dataSaida?: string;
-  createdAt: string;
 }
 
 export interface Transacao {
@@ -87,27 +96,25 @@ export interface NotaFiscal {
 }
 
 export interface UsuarioOnline {
-  id: string;
+  id: string; // user_id from Supabase
   email: string;
-  nome?: string;
   online: boolean;
   ultimoAcesso: string;
-  subscriptionStatus?: string;
-  subscriptionStart?: string;
-  subscriptionEnd?: string;
-  activationKey?: string;
+  subscriptionStatus: 'pending' | 'active' | 'cancelled' | 'refunded';
+  subscriptionStart?: string | null;
+  subscriptionEnd?: string | null;
+  activationKey?: string | null;
 }
 
 export interface ActivationKey {
   id: string;
   key: string;
+  used_by_email?: string;
+  used_at?: string;
+  expires_at?: string;
   status: 'available' | 'used' | 'revoked';
-  used_by?: string | null;
-  used_by_email?: string | null;
-  used_at?: string | null;
-  expires_at?: string | null;
-  note?: string | null;
-  created_at: string;
+  note?: string;
+  createdAt: string;
 }
 
 export interface DashboardStats {

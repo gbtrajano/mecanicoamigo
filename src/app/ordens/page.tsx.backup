@@ -1,9 +1,9 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { ordemDB, clienteDB, veiculoDB, servicoDB, pecaDB, usuarioDB } from '@/lib/local-db'
+import { ordemDB, clienteDB, veiculoDB, servicoDB, pecaDB } from '@/lib/local-db'
 import Modal from '@/components/Modal'
-import type { OrdemServico, Cliente, Veiculo, Servico, Peca, Usuario } from '@/types'
+import type { OrdemServico, Cliente, Veiculo, Servico, Peca } from '@/types'
 import { Plus, Search, Filter, Wrench, CheckCircle, Clock, XCircle, Trash2, Edit } from 'lucide-react'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
@@ -14,7 +14,6 @@ export default function OrdensPage() {
   const [veiculos, setVeiculos] = useState<Veiculo[]>([])
   const [servicos, setServicos] = useState<Servico[]>([])
   const [pecas, setPecas] = useState<Peca[]>([])
-  const [usuarios, setUsuarios] = useState<Usuario[]>([])
   const [search, setSearch] = useState('')
   const [filterStatus, setFilterStatus] = useState<string>('todos')
   const [modalOpen, setModalOpen] = useState(false)
@@ -23,19 +22,18 @@ export default function OrdensPage() {
     clienteId: '', veiculoId: '', status: 'pendente' as OrdemServico['status'],
     observacoes: '', dataPrevisao: '',
     servicos: [] as { servicoId: string; quantidade: number; preco: number }[],
-    pecas: [] as { pecaId: string; quantidade: number; preco: number }[],
-    responsavelId: ''
+    pecas: [] as { pecaId: string; quantidade: number; preco: number }[]
   })
 
   useEffect(() => { loadData() }, [])
 
   const loadData = async () => {
-    const [o, c, v, s, p, u] = await Promise.all([
+    const [o, c, v, s, p] = await Promise.all([
       ordemDB.getAll(), clienteDB.getAll(), veiculoDB.getAll(),
-      servicoDB.getAll(), pecaDB.getAll(), usuarioDB.getAll()
+      servicoDB.getAll(), pecaDB.getAll()
     ])
-    setOrdens(o.sort((a, b) => new Date(b.dataEntrada).getTime() - new Date(a.dataEntrada).getTime()))
-    setClientes(c); setVeiculos(v); setServicos(s); setPecas(p); setUsuarios(u)
+    setOrdens(o.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()))
+    setClientes(c); setVeiculos(v); setServicos(s); setPecas(p)
   }
 
   const filtered = ordens.filter(o => {
@@ -59,7 +57,6 @@ export default function OrdensPage() {
       numero: editingOrdem?.numero || `OS-${Date.now().toString().slice(-6)}`,
       clienteId: formData.clienteId,
       veiculoId: formData.veiculoId,
-      responsavelId: formData.responsavelId || undefined,
       status: formData.status,
       servicos: formData.servicos,
       pecas: formData.pecas,
@@ -78,7 +75,7 @@ export default function OrdensPage() {
 
     setModalOpen(false)
     setEditingOrdem(null)
-    setFormData({ clienteId: '', veiculoId: '', status: 'pendente', observacoes: '', dataPrevisao: '', servicos: [], pecas: [], responsavelId: '' })
+    setFormData({ clienteId: '', veiculoId: '', status: 'pendente', observacoes: '', dataPrevisao: '', servicos: [], pecas: [] })
     loadData()
   }
 
@@ -131,7 +128,7 @@ export default function OrdensPage() {
           <p className="text-sm text-text-muted mt-1">Gerencie todas as ordens da sua oficina</p>
         </div>
         <button
-          onClick={() => { setEditingOrdem(null); setFormData({ clienteId: '', veiculoId: '', status: 'pendente', observacoes: '', dataPrevisao: '', servicos: [], pecas: [], responsavelId: '' }); setModalOpen(true) }}
+          onClick={() => { setEditingOrdem(null); setFormData({ clienteId: '', veiculoId: '', status: 'pendente', observacoes: '', dataPrevisao: '', servicos: [], pecas: [] }); setModalOpen(true) }}
           className="flex items-center gap-2 bg-primary hover:bg-primary-dark text-white px-4 py-2.5 rounded-lg transition-colors font-medium"
         >
           <Plus className="w-4 h-4" />
@@ -211,7 +208,7 @@ export default function OrdensPage() {
                       <td className="px-4 py-3 text-right">
                         <div className="flex items-center justify-end gap-1">
                           <button
-                            onClick={() => { setEditingOrdem(ordem); setFormData({ ...ordem, observacoes: ordem.observacoes ?? '', dataPrevisao: ordem.dataPrevisao || '', responsavelId: ordem.responsavelId ?? '' }); setModalOpen(true) }}
+                            onClick={() => { setEditingOrdem(ordem); setFormData({ ...ordem, observacoes: ordem.observacoes ?? '', dataPrevisao: ordem.dataPrevisao || '' }); setModalOpen(true) }}
                             className="p-1.5 rounded-lg hover:bg-primary/10 text-text-muted hover:text-primary transition-colors"
                           >
                             <Edit className="w-4 h-4" />
@@ -267,27 +264,9 @@ export default function OrdensPage() {
                 ))}
               </select>
             </div>
-            </div>
+          </div>
 
-            <div className="mb-4">
-            <label className="block text-sm font-medium text-text mb-1">Funcionário Responsável</label>
-            <select
-              value={formData.responsavelId}
-              onChange={(e) => setFormData({ ...formData, responsavelId: e.target.value })}
-              className="w-full px-3 py-2 rounded-lg border border-border bg-bg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
-            >
-              <option value="">Selecione...</option>
-              {usuarios
-                .filter(u => u.papel === 'funcionario')
-                .map(u => (
-                  <option key={u.id} value={u.id}>
-                    {u.nome} ({u.email || 'Sem e-mail'})
-                  </option>
-                ))}
-            </select>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-text mb-1">Status</label>
               <select
