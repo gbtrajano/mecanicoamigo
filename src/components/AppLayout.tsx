@@ -11,17 +11,20 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter()
   const pathname = usePathname()
 
-  // Páginas públicas (não precisam de auth)
-  const publicPages = ['/', '/login']
-  const isPublic = publicPages.includes(pathname)
+  // Páginas que renderizam sem Sidebar/Header (layout limpo)
+  const standalonePages = ['/', '/login', '/aguardando']
+  const isStandalone = standalonePages.includes(pathname)
 
   useEffect(() => {
-    if (!loading && !user && !isPublic) {
+    // /aguardando requer usuário, então não é totalmente "public" no sentido de redirecionar p/ login se não houver usuário,
+    // mas o middleware já cuida do redirecionamento de login para rotas protegidas.
+    // Aqui garantimos que se não for standalone e não tiver usuário, vai pro login.
+    if (!loading && !user && !isStandalone) {
       router.push('/login')
     }
-  }, [user, loading, isPublic, router])
+  }, [user, loading, isStandalone, router])
 
-  if (loading && !isPublic) {
+  if (loading && !isStandalone) {
     return (
       <div className="min-h-screen bg-bg flex items-center justify-center">
         <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
@@ -29,7 +32,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     )
   }
 
-  if (isPublic) {
+  if (isStandalone) {
     return <>{children}</>
   }
 

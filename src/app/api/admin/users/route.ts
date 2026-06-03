@@ -9,6 +9,7 @@ interface UserPresence {
   subscription_status: string
   subscription_start: string | null
   subscription_end: string | null
+  activation_key?: string | null
 }
 
 function getAdminClient() {
@@ -33,11 +34,11 @@ export async function GET() {
     }
 
     const users = (data || []).map((u: UserPresence) => {
-      // Consider user online if last_seen is within the last 2 minutes
+      // Consider user online if last_seen is within the last 2 minutes AND online flag is true
       const lastSeen = new Date(u.last_seen);
       const now = new Date();
       const minutesDiff = (now.getTime() - lastSeen.getTime()) / (1000 * 60);
-      const isOnline = minutesDiff < 2; // Online if seen in last 2 minutes
+      const isOnline = u.online && minutesDiff < 2;
       
       return ({
         id: u.user_id,
@@ -46,7 +47,8 @@ export async function GET() {
         ultimoAcesso: u.last_seen,
         subscriptionStatus: u.subscription_status,
         subscriptionStart: u.subscription_start,
-        subscriptionEnd: u.subscription_end
+        subscriptionEnd: u.subscription_end,
+        activationKey: u.activation_key
       })
     })
 

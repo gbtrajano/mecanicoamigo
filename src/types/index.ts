@@ -95,6 +95,19 @@ export interface UsuarioOnline {
   subscriptionStatus?: string;
   subscriptionStart?: string;
   subscriptionEnd?: string;
+  activationKey?: string;
+}
+
+export interface ActivationKey {
+  id: string;
+  key: string;
+  status: 'available' | 'used' | 'revoked';
+  used_by?: string | null;
+  used_by_email?: string | null;
+  used_at?: string | null;
+  expires_at?: string | null;
+  note?: string | null;
+  created_at: string;
 }
 
 export interface DashboardStats {
