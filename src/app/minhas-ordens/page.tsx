@@ -3,38 +3,46 @@
 import { useEffect, useState, useCallback } from 'react';
 import { ordemDB, usuarioDB } from '@/lib/local-db';
 import type { OrdemServico, Usuario } from '@/types';
+import { useAuth } from '@/hooks/useAuth';
 import { Wrench, Clock, CheckCircle, XCircle, User } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
 export default function MinhasOrdensPage() {
+  const { user: authUser, loading: authLoading } = useAuth();
   const [ordens, setOrdens] = useState<OrdemServico[]>([]);
   const [usuario, setUsuario] = useState<Usuario | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    loadData();
-  }, []);
-
   const loadData = useCallback(async () => {
+    if (!authUser?.email) {
+      setLoading(false);
+      return;
+    }
+
     const [usuarios, ordensList] = await Promise.all([
       usuarioDB.getAll(),
       ordemDB.getAll()
     ]);
 
-    let usuarioId = '';
-    if (usuarios.length > 0) {
-      setUsuario(usuarios[0]);
-      usuarioId = usuarios[0].id;
+    const localUsuario = usuarios.find(u => u.email === authUser.email);
+    
+    if (localUsuario) {
+      setUsuario(localUsuario);
+      const usuarioOrdens = ordensList.filter(
+        ordem => ordem.responsavelId === localUsuario.id
+      ).sort((a, b) => new Date(b.dataEntrada).getTime() - new Date(a.dataEntrada).getTime());
+  
+      setOrdens(usuarioOrdens);
     }
-
-    const usuarioOrdens = ordensList.filter(
-      ordem => ordem.responsavelId === usuarioId
-    ).sort((a, b) => new Date(b.dataEntrada).getTime() - new Date(a.dataEntrada).getTime());
-
-    setOrdens(usuarioOrdens);
     setLoading(false);
-  }, []);
+  }, [authUser]);
+
+  useEffect(() => {
+    if (!authLoading) {
+      loadData();
+    }
+  }, [authLoading, loadData]);
 
   const getStatusIcon = (status: string) => {
     switch (status) {

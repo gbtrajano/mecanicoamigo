@@ -44,6 +44,26 @@ export interface Peca {
   createdAt: string;
 }
 
+export interface Ferramenta {
+  id: string;
+  codigo: string;
+  nome: string;
+  descricao?: string;
+  status: 'disponivel' | 'emprestada' | 'manutencao';
+  createdAt: string;
+}
+
+export interface EmprestimoFerramenta {
+  id: string;
+  ferramentaId: string;
+  usuarioId: string;
+  dataEmprestimo: string;
+  dataDevolucao?: string;
+  status: 'ativo' | 'devolvido';
+  observacoes?: string;
+  createdAt: string;
+}
+
 export interface Usuario {
   id: string;
   nome: string;

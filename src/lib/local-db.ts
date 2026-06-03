@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid'
-import type { Cliente, Veiculo, Servico, Peca, OrdemServico, Transacao, NotaFiscal, Usuario } from '@/types'
+import type { Cliente, Veiculo, Servico, Peca, OrdemServico, Transacao, NotaFiscal, Usuario, Ferramenta, EmprestimoFerramenta } from '@/types'
 
 const DB_NAME = 'OficinaDB'
 const DB_VERSION = 1
@@ -7,7 +7,7 @@ const DB_VERSION = 1
 const STORES = [
   'clientes', 'veiculos', 'servicos', 'pecas',
   'ordens', 'transacoes', 'notasFiscais', 'config',
-  'usuarios'
+  'usuarios', 'ferramentas', 'emprestimos'
 ] as const
 
 function openDB(): Promise<IDBDatabase> {
@@ -167,6 +167,28 @@ export const usuarioDB = {
     add('usuarios', { ...usuario, id: uuidv4(), createdAt: new Date().toISOString() }),
   update: (usuario: Usuario) => update('usuarios', usuario),
   delete: (id: string) => remove('usuarios', id)
+};
+
+// ===== FERRAMENTAS =====
+export const ferramentaDB = {
+  getAll: () => getAll<Ferramenta>('ferramentas'),
+  getById: (id: string) => getById<Ferramenta>('ferramentas', id),
+  add: (ferramenta: Omit<Ferramenta, 'id' | 'createdAt'>) =>
+    add('ferramentas', { ...ferramenta, id: uuidv4(), createdAt: new Date().toISOString() }),
+  update: (ferramenta: Ferramenta) => update('ferramentas', ferramenta),
+  delete: (id: string) => remove('ferramentas', id)
+};
+
+// ===== EMPRESTIMOS DE FERRAMENTAS =====
+export const emprestimoDB = {
+  getAll: () => getAll<EmprestimoFerramenta>('emprestimos'),
+  getById: (id: string) => getById<EmprestimoFerramenta>('emprestimos', id),
+  getByFerramenta: (ferramentaId: string) => query<EmprestimoFerramenta>('emprestimos', e => e.ferramentaId === ferramentaId),
+  getByUsuario: (usuarioId: string) => query<EmprestimoFerramenta>('emprestimos', e => e.usuarioId === usuarioId),
+  add: (emprestimo: Omit<EmprestimoFerramenta, 'id' | 'createdAt'>) =>
+    add('emprestimos', { ...emprestimo, id: uuidv4(), createdAt: new Date().toISOString() }),
+  update: (emprestimo: EmprestimoFerramenta) => update('emprestimos', emprestimo),
+  delete: (id: string) => remove('emprestimos', id)
 };
 
 // ===== CONFIG =====
