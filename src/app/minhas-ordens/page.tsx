@@ -107,7 +107,7 @@ export default function MinhasOrdensPage() {
         {todosUsuarios.length === 0 ? (
           <div className="bg-warning/10 border border-warning/20 rounded-xl p-6 text-center max-w-md w-full">
             <p className="text-warning font-medium">Nenhum funcionário cadastrado.</p>
-            <p className="text-sm text-text-muted mt-2">Vá até a aba "Equipe" para cadastrar os mecânicos e funcionários.</p>
+            <p className="text-sm text-text-muted mt-2">Vá até a aba &quot;Equipe&quot; para cadastrar os mecânicos e funcionários.</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full max-w-2xl">

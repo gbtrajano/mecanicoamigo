@@ -3,9 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { ferramentaDB, emprestimoDB, usuarioDB } from '@/lib/local-db';
 import type { Ferramenta, EmprestimoFerramenta, Usuario } from '@/types';
-import { Box, Plus, Wrench, Search, Users, AlertCircle, ArrowRightLeft, CheckCircle, Clock } from 'lucide-react';
-import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
+import { Box, Plus, Wrench, Search, Users, ArrowRightLeft, CheckCircle, Clock } from 'lucide-react';
 
 export default function AlmoxarifadoPage() {
   const [ferramentas, setFerramentas] = useState<Ferramenta[]>([]);
