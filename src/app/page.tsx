@@ -29,12 +29,6 @@ export default function HomePage() {
                   Começar Agora
                   <ArrowRight className="w-4 h-4" />
                 </Link>
-                <Link
-                  href="/login"
-                  className="inline-flex items-center gap-2 bg-surface hover:bg-bg text-text font-semibold px-6 py-3 rounded-xl transition-colors border border-border"
-                >
-                  Pedir Demonstração
-                </Link>
               </div>
               <div className="flex items-center gap-4 mt-8">
                 <div className="flex -space-x-2">
@@ -182,13 +176,6 @@ export default function HomePage() {
                 Seja para uma revisão, troca de óleo ou reparo mais complexo, o sistema agiliza seu atendimento, 
                 reduzindo papelada e aumentando a eficiência da sua oficina.
               </p>
-              <Link
-                href="/login"
-                className="inline-flex items-center gap-2 bg-primary hover:bg-primary-dark text-white font-semibold px-6 py-3 rounded-xl transition-colors"
-              >
-                Pedir Demonstração
-                <ArrowRight className="w-4 h-4" />
-              </Link>
             </div>
             <div className="bg-bg rounded-xl p-6 border border-border">
               <div className="space-y-3">
