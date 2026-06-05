@@ -58,7 +58,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 user_id: session.user.id,
                 email: session.user.email,
                 subscription_status: 'pending'
-              }, { onConflict: ['user_id'] });
+              }, { onConflict: 'user_id' });
             } else {
               // Real error
               console.error('[AuthProvider] Error fetching user data:', error);
@@ -74,7 +74,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 user_id: session.user.id,
                 email: session.user.email,
                 subscription_status: status
-              }, { onConflict: ['user_id'] });
+              }, { onConflict: 'user_id' });
             } else {
               // subscription_status is null or not a string
               setSubscriptionStatus(null);
@@ -83,7 +83,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 user_id: session.user.id,
                 email: session.user.email,
                 subscription_status: 'pending'
-              }, { onConflict: ['user_id'] });
+              }, { onConflict: 'user_id' });
             }
           } else {
             // Unexpected data shape
@@ -92,7 +92,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               user_id: session.user.id,
               email: session.user.email,
               subscription_status: 'pending'
-            }, { onConflict: ['user_id'] });
+            }, { onConflict: 'user_id' });
           }
         } else {
           setSubscriptionStatus(null);
@@ -140,7 +140,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 user_id: session.user.id,
                 email: session.user.email,
                 subscription_status: 'pending'
-              }, { onConflict: ['user_id'] });
+              }, { onConflict: 'user_id' });
             } else {
               // Real error
               console.error('[AuthProvider] Error fetching user data in handleAuthChange:', error);
@@ -155,14 +155,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 user_id: session.user.id,
                 email: session.user.email,
                 subscription_status: status
-              }, { onConflict: ['user_id'] });
+              }, { onConflict: 'user_id' });
             } else {
               setSubscriptionStatus(null);
               await supabase.from('user_presence').upsert({
                 user_id: session.user.id,
                 email: session.user.email,
                 subscription_status: 'pending'
-              }, { onConflict: ['user_id'] });
+              }, { onConflict: 'user_id' });
             }
           } else {
             // Unexpected data shape
@@ -171,7 +171,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               user_id: session.user.id,
               email: session.user.email,
               subscription_status: 'pending'
-            }, { onConflict: ['user_id'] });
+            }, { onConflict: 'user_id' });
           }
         } else {
           setSubscriptionStatus(null);
@@ -259,7 +259,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           id: data.user.id,
           email: data.user.email,
           subscription_status: 'pending'
-        }, { onConflict: ['id'] });
+        }, { onConflict: 'id' });
         
         // Create record in user_presence table
         await supabase.from('user_presence').upsert({
@@ -268,7 +268,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           online: true,
           last_seen: new Date().toISOString(),
           subscription_status: 'pending'
-        }, { onConflict: ['user_id'] });
+        }, { onConflict: 'user_id' });
       }
       
       return { error: null };
