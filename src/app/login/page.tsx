@@ -45,15 +45,18 @@ export default function LoginPage() {
       const { error } = await signIn(email, password)
       if (error) setError(error.message)
     } else {
-      const { error } = await signUp(email, password, { nome })
+      const { error } = await signUp(email, password, { nome });
       if (error) {
-        setError(error.message)
+        setError(error.message);
       } else {
-        setError('')
+        setError('');
         // Login automático após cadastro (sem confirmação de email)
-        const { error: loginError } = await signIn(email, password)
+        const { error: loginError } = await signIn(email, password);
         if (!loginError) {
-          router.push('/dashboard')
+          router.push('/dashboard');
+        } else {
+          // Login falhou (possivelmente devido à necessidade de confirmação de email)
+          setError('Cadastro realizado com sucesso! Por favor, verifique seu email para confirmar a conta antes de fazer login.');
         }
       }
     }

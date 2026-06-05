@@ -1,10 +1,11 @@
-'use client'
+'use client';
 
-import { useAuth } from '@/hooks/useAuth'
-import { Bell, User, Search } from 'lucide-react'
+import { useAuth } from '@/hooks/useAuth';
+import { Bell, User, Search, CreditCard } from 'lucide-react';
+import Link from 'next/link';
 
 export default function Header() {
-  const { user } = useAuth()
+  const { user, isAdmin, subscriptionStatus } = useAuth();
 
   return (
     <header className="h-16 bg-surface border-b border-border flex items-center justify-between px-6 sticky top-0 z-10">
@@ -29,12 +30,36 @@ export default function Header() {
           <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
             <User className="w-4 h-4 text-primary" />
           </div>
-          <div className="hidden md:block">
+          <div className="flex-1 flex flex-col items-end">
             <p className="text-sm font-medium text-text">{user?.email?.split('@')[0] || 'Usuário'}</p>
             <p className="text-xs text-text-muted">{user?.email}</p>
+            {/* Subscription status and action for non-admin users */}
+            {!isAdmin && (
+              <div className="mt-1 flex items-center gap-2">
+                <span className="px-2 py-0.5 rounded text-xs font-medium">
+                  {subscriptionStatus === 'active' ? (
+                    <span className="bg-green-100 text-green-800">Ativo</span>
+                  ) : subscriptionStatus === 'pending' ? (
+                    <span className="bg-yellow-100 text-yellow-800">Pendente</span>
+                  ) : subscriptionStatus === 'canceled' || subscriptionStatus === 'past_due' ? (
+                    <span className="bg-red-100 text-red-800">Vencido</span>
+                  ) : (
+                    <span className="bg-gray-100 text-gray-800">Desconhecido</span>
+                  )}
+                </span>
+                {subscriptionStatus !== 'active' && (
+                  <Link
+                    href="/planos"
+                    className="text-xs text-blue-600 hover:underline font-medium"
+                  >
+                    Assinar
+                  </Link>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>
     </header>
-  )
+  );
 }

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useAuth } from '@/hooks/useAuth'
 import { useRouter } from 'next/navigation'
 import { Wrench, Clock, CheckCircle, LogOut, Key, ArrowRight, Loader2, AlertCircle } from 'lucide-react'
@@ -13,11 +13,7 @@ export default function AguardandoPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
-
-  const handleSignOut = async () => {
-    await signOut()
-    router.push('/login')
-  }
+  const [redirecting, setRedirecting] = useState(false)
 
   /** Formata a chave enquanto o usuário digita: MECA-XXXX-XXXX-XXXX */
   const handleKeyInput = (value: string) => {
@@ -54,7 +50,7 @@ export default function AguardandoPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ key }),
       })
-      const data = await res.json() as { error?: string; success?: boolean }
+      const data = await res.json() as { error?: string; success?: boolean; message?: string }
 
       if (!res.ok || !data.success) {
         setError(data.error ?? 'Chave inválida. Verifique e tente novamente.')
@@ -62,11 +58,35 @@ export default function AguardandoPage() {
       }
 
       setSuccess(true)
-      setTimeout(() => router.push('/dashboard'), 1500)
-    } catch {
+      setRedirecting(true)
+      // O redirect será tratado pelo useEffect abaixo
+    } catch (err) {
+      console.error('[Aguardando] Activation error:', err)
       setError('Erro de conexão. Tente novamente.')
     } finally {
       setLoading(false)
+    }
+  }
+
+  // Efeito para forçar redirect quando success for true
+  // Isso garante que o redirect aconteça mesmo se houver algum problema com os timeouts
+  useEffect(() => {
+    if (success && redirecting) {
+      // Pequeno delay para permitir que o estado de sucesso seja renderizado
+      const timeout = setTimeout(() => {
+        if (router) {
+          router.push('/dashboard')
+        }
+      }, 1500)
+      
+      return () => clearTimeout(timeout)
+    }
+  }, [success, redirecting, router])
+
+  const handleSignOut = async () => {
+    await signOut()
+    if (router) {
+      router.push('/')
     }
   }
 
@@ -97,6 +117,13 @@ export default function AguardandoPage() {
               <p className="text-text-muted text-sm">
                 Sua chave foi validada com sucesso. Redirecionando para o sistema...
               </p>
+
+              {/* Barra de progresso opcional para melhorar UX */}
+              {redirecting && (
+                <div className="mt-4 w-full h-1 bg-success/20 rounded-full overflow-hidden">
+                  <div className="h-full bg-success w-[30%] transition-all duration-1500 ease-out" />
+                </div>
+              )}
             </div>
           ) : (
             <>
@@ -133,10 +160,7 @@ export default function AguardandoPage() {
                     maxLength={19}
                     autoComplete="off"
                     spellCheck={false}
-                    className={`w-full px-4 py-3 rounded-lg border ${
-                      error ? 'border-danger bg-danger/5' : 'border-border bg-bg'
-                    } text-text text-base font-mono tracking-widest text-center focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all placeholder:font-sans placeholder:tracking-normal placeholder:text-text-muted/50`}
-                    style={{ letterSpacing: key ? '0.15em' : undefined }}
+                    className={`w-full px-4 py-3 rounded-lg border ${error ? 'border-danger bg-danger/5' : 'border-border bg-bg'} text-text text-base font-mono tracking-widest text-center focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all placeholder:font-sans placeholder:tracking-normal placeholder:text-text-muted/50`}
                   />
                   {error && (
                     <div className="flex items-center gap-2 mt-2 text-danger text-xs">
@@ -150,8 +174,7 @@ export default function AguardandoPage() {
                   id="activate-btn"
                   type="submit"
                   disabled={loading || key.length < 19}
-                  className="w-full bg-primary hover:bg-primary-dark text-white font-medium py-3 rounded-lg transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm hover:shadow-md"
-                >
+                  className="w-full bg-primary hover:bg-primary-dark text-white font-medium py-3 rounded-lg transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm hover:shadow-md">
                   {loading ? (
                     <Loader2 className="w-4 h-4 animate-spin" />
                   ) : (
@@ -201,8 +224,7 @@ export default function AguardandoPage() {
           {!success && (
             <button
               onClick={handleSignOut}
-              className="flex items-center justify-center gap-2 w-full mt-5 px-4 py-2.5 rounded-lg border border-border text-text-muted hover:text-danger hover:border-danger/30 hover:bg-danger/5 transition-all text-sm font-medium"
-            >
+              className="flex items-center justify-center gap-2 w-full mt-5 px-4 py-2.5 rounded-lg border border-border text-text-muted hover:text-danger hover:border-danger/30 hover:bg-danger/5 transition-all text-sm font-medium">
               <LogOut className="w-4 h-4" />
               Sair da conta
             </button>
