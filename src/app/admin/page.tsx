@@ -512,7 +512,7 @@ export default function AdminPage() {
                         </span>
                       </td>
                       <td className="px-6 py-3 text-sm text-text-muted">
-                        {format(new Date(u.ultimoAcesso.endsWith('Z') ? u.ultimoAcesso : `${u.ultimoAcesso}Z`), 'dd/MM/yyyy HH:mm', { locale: ptBR })}
+                        {u.ultimoAcesso ? format(new Date(u.ultimoAcesso.endsWith('Z') ? u.ultimoAcesso : `${u.ultimoAcesso}Z`), 'dd/MM/yyyy HH:mm', { locale: ptBR }) : 'Nunca'}
                       </td>
                       <td className="px-6 py-3">{getStatusBadge(u.subscriptionStatus)}</td>
                       <td className="px-6 py-3 text-right">
