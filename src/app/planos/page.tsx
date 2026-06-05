@@ -1,12 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { createClient } from "@/lib/supabase/server";
 
 export default function PlanosPage() {
-  const router = useRouter();
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -38,9 +35,9 @@ export default function PlanosPage() {
       } else {
         throw new Error("No URL returned from checkout session");
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
-      setError(err.message || "Ocorreu um erro inesperado");
+      setError(err instanceof Error ? err.message : "Ocorreu um erro inesperado");
     } finally {
       setLoading(false);
     }

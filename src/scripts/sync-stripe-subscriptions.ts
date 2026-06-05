@@ -34,7 +34,7 @@ async function syncStripeSubscriptions() {
   console.log(`[Stripe Sync] Found ${users.length} users with Stripe subscriptions.`);
 
   for (const user of users) {
-    const { id, stripe_subscription_id, stripe_customer_id } = user;
+    const { id, stripe_subscription_id } = user;
 
     if (!stripe_subscription_id) {
       continue;

@@ -38,7 +38,7 @@ function generateKey(): string {
 }
 
 // GET /api/admin/keys — lista todas as chaves
-export async function GET(_: Request) {
+export async function GET() {
   const user = await getRequestingUser()
   if (!user || user.app_metadata?.role !== 'admin') {
     return NextResponse.json({ error: 'Não autorizado' }, { status: 403 })

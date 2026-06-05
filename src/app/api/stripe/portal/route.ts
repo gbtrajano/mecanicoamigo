@@ -6,7 +6,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2026-05-27.dahlia',
 });
 
-export async function POST(request: Request) {
+export async function POST() {
   try {
     const supabase = await createClient();
     const {

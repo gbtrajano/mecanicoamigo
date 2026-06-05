@@ -112,7 +112,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     checkSession();
 
-    const handleAuthChange = async (_event: any, session: Session | null) => {
+    const handleAuthChange = async (_event: string, session: Session | null) => {
       try {
         setUser(session?.user || null);
         setIsAdmin(session?.user?.app_metadata?.role === 'admin' || false);

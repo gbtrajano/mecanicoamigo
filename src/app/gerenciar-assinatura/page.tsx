@@ -5,7 +5,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useState } from 'react';
 
 export default function GerenciarAssinaturaPage() {
-  const { user, isAdmin, subscriptionStatus } = useAuth();
+  const { isAdmin, subscriptionStatus } = useAuth();
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);

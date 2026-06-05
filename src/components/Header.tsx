@@ -1,7 +1,7 @@
 'use client';
 
 import { useAuth } from '@/hooks/useAuth';
-import { Bell, User, Search, CreditCard } from 'lucide-react';
+import { Bell, User, Search } from 'lucide-react';
 import Link from 'next/link';
 
 export default function Header() {
